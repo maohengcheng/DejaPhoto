@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE = 20;
@@ -55,12 +58,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Create intent for getting photos through the album
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        String[] projectImage = new String[] {
+                MediaStore.Images.ImageColumns._ID,
+                MediaStore.Images.ImageColumns.DATA,
+                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.ImageColumns.DATE_TAKEN,
+                MediaStore.Images.ImageColumns.MIME_TYPE,
+        };
 
-        //Start the intent
-        startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
+        final Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                projectImage, null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+
+        if(cursor.moveToFirst()) {
+            final ImageView imageView = (ImageView) findViewById(R.id.mainView);
+            String imageLoc = cursor.getString(1);
+            File imageFile = new File(imageLoc);
+            if(imageFile.exists()) {
+                Bitmap bitmap = BitmapFactory.decodeFile(imageLoc);
+                imageView.setImageBitmap(bitmap);
+            }
+        }
     }
 
     @Override
@@ -102,26 +119,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             if(requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
                     && null != data) {
-                /*
-                // Get the Image from data
-
-                Uri selectedImage = data.getData();
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-                // Get the cursor
-                Cursor cursor = getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                // Move to first row
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                imgDecodableString = cursor.getString(columnIndex);
-                cursor.close();
-                ImageView imgView = (ImageView) findViewById(R.id.imgView);
-                // Set the Image in ImageView after decoding the String
-                imgView.setImageBitmap(BitmapFactory
-                        .decodeFile(imgDecodableString));
-*/
 
                 Uri photoUri = data.getData();
                 // Do something with the photo based on Uri
