@@ -23,7 +23,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 20;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE = 20;
     private static int RESULT_LOAD_IMG = 1;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2012;
     String imgPath;
@@ -35,12 +35,12 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (checkSelfPermission(Manifest.permission.READ_CONTACTS)
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
-                    MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE);
 
-            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE is an
             // app-defined int constant
 
             return;
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_CONTACTS: {
+            case MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     // permission was granted, yay! do the
