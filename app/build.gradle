@@ -5,8 +5,8 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "cse110.group6.dejaphoto"
-        minSdkVersion 16
-        targetSdkVersion 25
+        minSdkVersion 23 // 16 default
+        targetSdkVersion 25 // 22 does not need runtime permission check
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
