@@ -21,5 +21,7 @@
             </intent-filter>
         </activity>
     </application>
+    //Sets user permission so we can change the wallpaper background -Junnel
+    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
 
 </manifest>

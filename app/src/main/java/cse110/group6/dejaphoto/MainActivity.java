@@ -1,6 +1,7 @@
 package cse110.group6.dejaphoto;
 
 import android.Manifest;
+import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE = 20;
@@ -76,8 +78,10 @@ public class MainActivity extends AppCompatActivity {
             if(imageFile.exists()) {
                 Bitmap bitmap = BitmapFactory.decodeFile(imageLoc);
                 imageView.setImageBitmap(bitmap);
+
             }
         }
+
     }
 
     @Override
@@ -126,6 +130,18 @@ public class MainActivity extends AppCompatActivity {
                 // Load the selected image into a preview
                 ImageView ivPreview = (ImageView) findViewById(R.id.mainView);
                 ivPreview.setImageBitmap(selectedImage);
+
+                //Creates a WallpaperManager object
+                //and sets the background image to whatever was selected from
+                //the gallery (later automatically)
+                WallpaperManager myWallpaperManager
+                        = WallpaperManager.getInstance(getApplicationContext());
+                try {
+                    myWallpaperManager.setBitmap(selectedImage);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             } else {
                 Toast.makeText(this, "No image selected", Toast.LENGTH_LONG).show();
             }
