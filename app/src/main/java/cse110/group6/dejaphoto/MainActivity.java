@@ -30,13 +30,16 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE = 20;
     private static int RESULT_LOAD_IMG = 1;
+    private ImageView imageView;
+    private String imageLoc;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2012;
-    String imgPath;
+    Photo photos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        imageView = (ImageView) findViewById(R.id.mainView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -60,28 +63,33 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        String[] projectImage = new String[] {
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DATA,
-                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.ImageColumns.DATE_TAKEN,
-                MediaStore.Images.ImageColumns.MIME_TYPE,
-        };
+        photos = new Photo();
+        photos.setCursor(getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                photos.getImages(), null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
 
-        final Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                projectImage, null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
-
-        if(cursor.moveToFirst()) {
-            final ImageView imageView = (ImageView) findViewById(R.id.mainView);
-            String imageLoc = cursor.getString(1);
+        imageLoc = photos.getMostRecentImage();
+        if(imageLoc != null) {
             File imageFile = new File(imageLoc);
-            if(imageFile.exists()) {
-                Bitmap bitmap = BitmapFactory.decodeFile(imageLoc);
-                imageView.setImageBitmap(bitmap);
-
-            }
+            setBackground(imageLoc, imageView, imageFile);
+        } else {
+            Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void setBackground(String imageLoc, ImageView imageView, File imageFile) {
+        Bitmap bitmap = BitmapFactory.decodeFile(imageLoc);
+        if(imageFile.exists() && imageLoc != null) {
+            imageView.setImageBitmap(bitmap);
+            WallpaperManager myWallpaperManager
+                    = WallpaperManager.getInstance(getApplicationContext());
+            try {
+                myWallpaperManager.setBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     @Override
@@ -117,31 +125,42 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
     }
 
+    public void nextImage(View view) {
+        imageLoc = photos.getNextImage();
+        if(imageLoc != null) {
+            File imageFile = new File(imageLoc);
+            setBackground(imageLoc, imageView, imageFile);
+        } else {
+            Toast.makeText(this, "No next image", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public void prevImage(View view) {
+        imageLoc = photos.getPrevImage();
+        if(imageLoc != null) {
+            File imageFile = new File(imageLoc);
+            setBackground(imageLoc, imageView, imageFile);
+        } else {
+            Toast.makeText(this, "No previous image", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
         try {
             if(requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
-                    && null != data) {
+                    && data != null) {
 
                 Uri photoUri = data.getData();
                 // Do something with the photo based on Uri
-                Bitmap selectedImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), photoUri);
-                // Load the selected image into a preview
-                ImageView ivPreview = (ImageView) findViewById(R.id.mainView);
-                ivPreview.setImageBitmap(selectedImage);
+                photos.setCursor(getContentResolver().query(photoUri, photos.getImages(), null, null, null));
+                imageLoc = photos.getMostRecentImage();
+                File imageFile = new File(imageLoc);
+                setBackground(imageLoc, imageView, imageFile);
 
-                //Creates a WallpaperManager object
-                //and sets the background image to whatever was selected from
-                //the gallery (later automatically)
-                WallpaperManager myWallpaperManager
-                        = WallpaperManager.getInstance(getApplicationContext());
-                try {
-                    myWallpaperManager.setBitmap(selectedImage);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
             } else {
                 Toast.makeText(this, "No image selected", Toast.LENGTH_LONG).show();
             }
