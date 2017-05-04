@@ -1,6 +1,7 @@
 package cse110.group6.dejaphoto;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
@@ -8,13 +9,17 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.view.GestureDetector;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,7 +42,9 @@ public class MainActivity extends AppCompatActivity {
     int screenWidth;
     int screenHeight;
     Photo photos;
+    OnSwipeTouchListener onSwipeTouchListener;
 
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,14 +60,13 @@ public class MainActivity extends AppCompatActivity {
         screenWidth = displayMetrics.widthPixels;
         screenHeight = displayMetrics.heightPixels;
 
+        /* get read external storage permission during runtime to get
+            access to the gallery
+         */
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE);
-
-            // MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE is an
-            // app-defined int constant
-
             return;
         }
 
@@ -73,10 +79,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /* instantiate the Photo object, then initialize it first with the
+            most recent image in the gallery */
         photos = new Photo();
         photos.setCursor(getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 photos.getImages(), null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
-
         imageLoc = photos.getMostRecentImage();
         if(imageLoc != null) {
             File imageFile = new File(imageLoc);
@@ -85,83 +92,119 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
         }
 
+        /* swipe left and right code adapted from:
+            http://stackoverflow.com/questions/4139288/android-how-to-handle-right-to-left-swipe-gestures */
+        /* instantiate the onSwipeTouchListener Object, then set imageView
+            to have this listener */
+        onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
+            public void onSwipeRight() {
+                imageLoc = photos.getPrevImage();
+                if(imageLoc != null) {
+                    File imageFile = new File(imageLoc);
+                    setBackgroundAndView(imageLoc, imageView, imageFile);
+                } else {
+                    Toast.makeText(MainActivity.this, "No previous image", Toast.LENGTH_SHORT).show();
+                }
+            }
+            public void onSwipeLeft() {
+                imageLoc = photos.getNextImage();
+                if(imageLoc != null) {
+                    File imageFile = new File(imageLoc);
+                    setBackgroundAndView(imageLoc, imageView, imageFile);
+                } else {
+                    Toast.makeText(MainActivity.this, "No next image", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+        new Thread() {
+            public void run() {
+                imageView.setOnTouchListener(onSwipeTouchListener);
+            }
+        }.start();
+
     }
-
-
-
+    /* end of onCreate */
 
 
     /* functions calculateInSampleSize and decodeSampleBitmap adapted from:
         https://developer.android.com/topic/performance/graphics/load-bitmap.html */
+    /* calculates the new height and width of a picture if they exceed the
+        bounds
+     */
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        // Raw height and width of image
+        /* get height and width of image */
         final int height = options.outHeight;
         final int width = options.outWidth;
         int inSampleSize = 1;
 
+        /* if dimensions exceed bounds, resize */
         if (height > reqHeight || width > reqWidth) {
 
             final int halfHeight = height / 2;
             final int halfWidth = width / 2;
 
-            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-            // height and width larger than the requested height and width.
             while ((halfHeight / inSampleSize) >= reqHeight
                     && (halfWidth / inSampleSize) >= reqWidth) {
                 inSampleSize *= 2;
             }
         }
-
         return inSampleSize;
     }
 
+    /* Decode a bitmap while adjusting it width and height if they exceed
+        the bounds
+     */
     public static Bitmap decodeSampledBitmap(String imageLoc, File imageFile,
                                              int reqWidth, int reqHeight) {
-
-        // Decode with inJustDecodeBounds=true to check dimensions
+        /* decode while checking image dimensions */
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         decodeFile(imageLoc, options);
 
-        // Calculate inSampleSize
+        /* calculate inSampleSize */
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
-        // Decode bitmap with inSampleSize set
+        /* decode without checking image dimensions */
         options.inJustDecodeBounds = false;
         return decodeFile(imageLoc, options);
     }
 
     /* function codec adapted from:
     http://android.okhelp.cz/compressing-a-bitmap-to-jpg-format-android-example/ */
+    /* reformats an image to jpeg format */
     private static Bitmap codec(Bitmap src, Bitmap.CompressFormat format,
                                 int quality) {
+        /* get the image data */
         ByteArrayOutputStream os = new ByteArrayOutputStream();
+        /* convert image */
         src.compress(format, quality, os);
-
         byte[] array = os.toByteArray();
         return BitmapFactory.decodeByteArray(array, 0, array.length);
     }
 
-
-
-
-
+    /* sets the apps imageView and the phones background to some image
+        specified by the image's file location
+     */
+    @RequiresApi(api = Build.VERSION_CODES.ECLAIR)
     private void setBackgroundAndView(String imageLoc, ImageView imageView, File imageFile) {
         ////final Bitmap bitmap =
         ////        decodeSampledBitmap(imageLoc, imageFile, screenWidth, screenHeight);
 
-
         final Bitmap bitmap = decodeFile(imageLoc);
-
         /* bJPGcompress adapted from:
             http://android.okhelp.cz/compressing-a-bitmap-to-jpg-format-android-example/ */
         // Best of quality is 80 and more, 3 is very low quality of image
         ////Bitmap bJPGcompress = codec(bitmap, Bitmap.CompressFormat.JPEG, 1);
         //Bitmap bitmap = BitmapFactory.decodeFile(imageLoc);
+
+        /*check if image exists, then set imageView and background */
         if(imageFile.exists() && imageLoc != null) {
             imageView.setImageBitmap(bitmap);
 
+            /* set the background in a separate thread to improve app runtime
+                speed
+                */
             new Thread() {
                 WallpaperManager myWallpaperManager
                         = WallpaperManager.getInstance(getApplicationContext());
@@ -201,16 +244,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /* loads an image from as a response to the "load image" button */
     public void loadImage(View view) {
-
-        //Create intent for getting photos through the album
+        /* create intent for getting images through the album */
         Intent galleryIntent = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-        //Start the intent
+        /* start the intent */
         startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
     }
 
+    /* get next image */
+    @TargetApi(Build.VERSION_CODES.ECLAIR)
     public void nextImage(View view) {
         imageLoc = photos.getNextImage();
         if(imageLoc != null) {
@@ -222,6 +267,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /* get previous image */
+    @TargetApi(Build.VERSION_CODES.ECLAIR)
     public void prevImage(View view) {
         imageLoc = photos.getPrevImage();
         if(imageLoc != null) {
@@ -233,6 +280,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /* gets the selected image's data and sets it to imageView and the
+        background
+     */
+    @TargetApi(Build.VERSION_CODES.ECLAIR)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
@@ -240,13 +291,13 @@ public class MainActivity extends AppCompatActivity {
             if(requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
                     && data != null) {
 
+                /* get image data with a uri */
                 Uri photoUri = data.getData();
-                // Do something with the photo based on Uri
+                /* get actual image from uri */
                 photos.setCursor(getContentResolver().query(photoUri, photos.getImages(), null, null, null));
                 imageLoc = photos.getMostRecentImage();
                 File imageFile = new File(imageLoc);
                 setBackgroundAndView(imageLoc, imageView, imageFile);
-
             } else {
                 Toast.makeText(this, "No image selected", Toast.LENGTH_LONG).show();
             }
