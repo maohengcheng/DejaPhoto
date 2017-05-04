@@ -20,6 +20,30 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <ImageButton
+        android:id="@+id/releaseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:src="@mipmap/ic_release"
+        android:onClick="releasePhoto"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <ImageButton
+        android:id="@+id/karmaButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:src="@mipmap/ic_karma"
+        android:onClick="giveKarma"
+        android:layout_marginRight="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+
+    <!-- Commented out for UI purposes
     <Button
         android:id="@+id/loadButton"
         android:layout_width="0dp"
@@ -40,8 +64,6 @@
         app:layout_constraintHorizontal_bias="0.0"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp" />
-
-    <!-- Push test -->
 
     <Button
         android:id="@+id/nextButton"
@@ -76,5 +98,6 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.908" />
+    -->
 
 </android.support.constraint.ConstraintLayout>
