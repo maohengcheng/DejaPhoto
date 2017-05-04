@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static android.graphics.BitmapFactory.decodeFile;
+import static java.lang.Boolean.FALSE;
 
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE = 20;
@@ -43,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     int screenHeight;
     Photo photos;
     OnSwipeTouchListener onSwipeTouchListener;
+
+    private static boolean released = FALSE; // temporary field for testing release button
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -69,15 +73,6 @@ public class MainActivity extends AppCompatActivity {
                     MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE);
             return;
         }
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         /* instantiate the Photo object, then initialize it first with the
             most recent image in the gallery */
@@ -321,11 +316,33 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        // What to do when settings button is pressed (launch activity)
         if (id == R.id.action_settings) {
+            Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void giveKarma(View view) {
+        ImageButton button = (ImageButton) findViewById(R.id.karmaButton);
+        button.setImageResource(R.mipmap.ic_karma);
+        Toast.makeText(this, "Photo has been given good karma!", Toast.LENGTH_SHORT).show();
+    }
+
+    public void releasePhoto(View view) {
+        ImageButton button = (ImageButton) findViewById(R.id.releaseButton);
+
+        if(released) {
+            button.setImageResource(R.mipmap.ic_release);
+            Toast.makeText(this, "Photo is no longer released", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            button.setImageResource(R.mipmap.ic_undo);
+            Toast.makeText(this, "Photo is released", Toast.LENGTH_SHORT).show();
+        }
+
+        released = !released;
     }
 }
