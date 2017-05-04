@@ -43,6 +43,7 @@ public class Photo {
     }
 
     public String getMostRecentImage () {
+        /*
         new Thread() {
             public void run() {
                 try {
@@ -54,15 +55,16 @@ public class Photo {
             }
         }.start();
         return imageLoc;
-        /*
+        */
         if(cursor.moveToFirst()) {
             return cursor.getString(columnIndex);
         }
         else
-            return null;*/
+            return null;
     }
 
     public String getNextImage() {
+        /*
         new Thread() {
             public void run() {
                 try {
@@ -73,10 +75,15 @@ public class Photo {
                 }
             }
         }.start();
-        return imageLoc;
+        return imageLoc;*/
+        if(cursor.moveToNext()) {
+            return cursor.getString(columnIndex);
+        } else
+            return null;
     }
 
     public String getPrevImage() {
+        /*
         new Thread() {
             public void run() {
                 try {
@@ -87,11 +94,11 @@ public class Photo {
                 }
             }
         }.start();
-        return imageLoc;
-        /*if(cursor.moveToPrevious()) {
+        return imageLoc;*/
+        if(cursor.moveToPrevious()) {
             return cursor.getString(columnIndex);
         } else
-            return null; */
+            return null;
     }
 
     public void closeCursor() {
