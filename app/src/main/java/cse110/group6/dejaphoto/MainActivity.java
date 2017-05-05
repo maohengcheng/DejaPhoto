@@ -13,13 +13,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.view.GestureDetector;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     int screenWidth;
     int screenHeight;
     Photo photos;
-    OnSwipeTouchListener onSwipeTouchListener;
+    SwipeListener swipeListener;
 
     private static boolean released = FALSE; // temporary field for testing release button
 
@@ -89,9 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
         /* swipe left and right code adapted from:
             http://stackoverflow.com/questions/4139288/android-how-to-handle-right-to-left-swipe-gestures */
-        /* instantiate the onSwipeTouchListener Object, then set imageView
+        /* instantiate the swipeListener Object, then set imageView
             to have this listener */
-        onSwipeTouchListener = new OnSwipeTouchListener(MainActivity.this) {
+        swipeListener = new SwipeListener(MainActivity.this) {
             public void onSwipeRight() {
                 imageLoc = photos.getPrevImage();
                 if(imageLoc != null) {
@@ -113,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         };
         new Thread() {
             public void run() {
-                imageView.setOnTouchListener(onSwipeTouchListener);
+                imageView.setOnTouchListener(swipeListener);
             }
         }.start();
 

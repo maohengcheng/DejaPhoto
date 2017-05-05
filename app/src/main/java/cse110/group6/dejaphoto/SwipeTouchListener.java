@@ -11,11 +11,11 @@ import android.view.View;
  * http://stackoverflow.com/questions/4139288/android-how-to-handle-right-to-left-swipe-gestures
  */
 
-class OnSwipeTouchListener implements View.OnTouchListener {
+class SwipeListener implements View.OnTouchListener {
     private final GestureDetector gestureDetector;
 
-    public OnSwipeTouchListener (Context ctx){
-        gestureDetector = new GestureDetector(ctx, new GestureListener());
+    public SwipeListener(Context context){
+        gestureDetector = new GestureDetector(context, new GestureListener());
     }
 
     public GestureDetector getGestureDetector(){
@@ -29,8 +29,8 @@ class OnSwipeTouchListener implements View.OnTouchListener {
 
     private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        private static final int swipeDistanceThreshold = 100;
-        private static final int swipeSpeedThreshold = 100;
+        private static final int swipeDistanceThreshold = 80;
+        private static final int swipeSpeedThreshold = 80;
 
         @Override
         public boolean onDown(MotionEvent e) {
@@ -38,13 +38,13 @@ class OnSwipeTouchListener implements View.OnTouchListener {
         }
 
         @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float xCoordinate, float yCoordinate) {
             boolean result = false;
             try {
                 double diffY = e2.getY() - e1.getY();
                 double diffX = e2.getX() - e1.getX();
                 if (Math.abs(diffX) > Math.abs(diffY)) {
-                    if (Math.abs(diffX) > swipeDistanceThreshold && Math.abs(velocityX) > swipeSpeedThreshold) {
+                    if (Math.abs(diffX) > swipeDistanceThreshold && Math.abs(xCoordinate) > swipeSpeedThreshold) {
                         if (diffX > 0) {
                             onSwipeRight();
                         } else {
@@ -53,7 +53,7 @@ class OnSwipeTouchListener implements View.OnTouchListener {
                         result = true;
                     }
                 }
-                else if (Math.abs(diffY) > swipeDistanceThreshold && Math.abs(velocityY) > swipeSpeedThreshold) {
+                else if (Math.abs(diffY) > swipeDistanceThreshold && Math.abs(yCoordinate) > swipeSpeedThreshold) {
                     if (diffY > 0) {
                         onSwipeBottom();
                     } else {
@@ -61,8 +61,8 @@ class OnSwipeTouchListener implements View.OnTouchListener {
                     }
                     result = true;
                 }
-            } catch (Exception exception) {
-                exception.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             return result;
         }
