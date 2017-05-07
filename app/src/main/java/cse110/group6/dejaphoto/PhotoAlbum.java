@@ -1,6 +1,8 @@
 package cse110.group6.dejaphoto;
 
+import android.annotation.TargetApi;
 import android.database.Cursor;
+import android.os.Build;
 import android.provider.MediaStore;
 import java.util.*;
 
@@ -12,6 +14,7 @@ public class PhotoAlbum {
     String[] projectImage;
     Cursor cursor;
     int filePathIndex;
+    int weight;
     String imageLoc;
     Vector<Photo> photos;
 
@@ -36,10 +39,10 @@ public class PhotoAlbum {
         photos = new Vector<Photo>(10, 5);
 
         for(int i = 0; i < cursor.getCount(); i++){
-            String filePath = cursor.getString(1); //1
-            double longitude = cursor.getDouble(5); //6
-            double latitude = cursor.getDouble(6); //7
-            long dateTaken = cursor.getLong(3); //4
+            String filePath = cursor.getString(1);
+            double longitude = cursor.getDouble(5);
+            double latitude = cursor.getDouble(6);
+            long dateTaken = cursor.getLong(3);
             photos.add(new Photo(filePath, longitude, latitude, dateTaken, false, false, 0));
             //System.out.println("id: " + filePath + " date: " + dateTaken + " long: " + longitude + " lat: " + latitude);
             //System.out.println("filepath from photos: " + photos.get(i).getFilePath());
@@ -88,5 +91,4 @@ public class PhotoAlbum {
     public void closeCursor() {
         cursor.close();
     }
-
 }

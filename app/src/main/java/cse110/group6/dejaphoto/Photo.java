@@ -1,21 +1,17 @@
 package cse110.group6.dejaphoto;
 
-<<<<<<< HEAD
-=======
+import android.annotation.TargetApi;
 import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
+import android.os.Build;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
->>>>>>> 052f5e8e078b373e2527822ba87564d7dfe0e573
 /**
  * Created by Michael on 5/6/2017.
  */
 
 public class Photo {
-<<<<<<< HEAD
     String filePath;
     double longitude;
     double latitude;
@@ -33,26 +29,6 @@ public class Photo {
         this.karma = karma;
         this.released = released;
         this.weight = weight;
-=======
-    String[] projectImage;
-    Cursor cursor;
-    int weight;
-    boolean isReleased;
-    int columnIndex;
-    String imageLoc;
-
-    Photo() {
-        projectImage = new String[] {
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DATA,
-                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.ImageColumns.DATE_TAKEN,
-                MediaStore.Images.ImageColumns.MIME_TYPE,
-        };
-        isReleased = false;
-        columnIndex = 1;
-        weight = 0;
->>>>>>> 052f5e8e078b373e2527822ba87564d7dfe0e573
     }
 
     /* setters */
@@ -84,7 +60,6 @@ public class Photo {
         this.weight = weight;
     }
 
-<<<<<<< HEAD
     /* getters */
     public String getFilePath() {
         return filePath;
@@ -110,9 +85,9 @@ public class Photo {
         return released;
     }
 
-    public double getWeight() {
-        return weight;
-=======
+
+
+
     // Recalculates weight for current status (may need fields)
     void calcWeight() {
         // Calculate difference in location, add some corresponding value to weight
@@ -125,12 +100,13 @@ public class Photo {
     }
 
     // Accessor method for weight
-    int getWeight() {
+    double getWeight() {
         return weight;
     }
 
     // Choose photo algorithm, move to service class when made
     // This assumes that all photos are not released and can be chosen
+    @TargetApi(Build.VERSION_CODES.M)
     static Photo choosePhoto(Photo[] photos) {
         for(Photo photo : photos)
             photo.calcWeight();
@@ -207,6 +183,5 @@ public class Photo {
             }
         }
         photos[0] = photo;
->>>>>>> 052f5e8e078b373e2527822ba87564d7dfe0e573
     }
 }

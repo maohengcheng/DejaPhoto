@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* get next image */
-    @TargetApi(Build.VERSION_CODES.ECLAIR)
+    @TargetApi(Build.VERSION_CODES.M)
     public void nextImage(View view) {
         imageLoc = photos.getNextImage();
         if(imageLoc != null) {
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* get previous image */
-    @TargetApi(Build.VERSION_CODES.ECLAIR)
+    @TargetApi(Build.VERSION_CODES.M)
     public void prevImage(View view) {
         imageLoc = photos.getPrevImage();
         if(imageLoc != null) {
@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
     /* gets the selected image's data and sets it to imageView and the
         background
      */
-    @TargetApi(Build.VERSION_CODES.ECLAIR)
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
