@@ -141,18 +141,11 @@ public class MainActivity extends AppCompatActivity {
                 WallpaperManager myWallpaperManager
                         = WallpaperManager.getInstance(getApplicationContext());
 
-                //Return if the thread is interrupted
-            if(Thread.interrupted()) {
-                return;
-            }
-            else {
-                try {
+            try {
                     myWallpaperManager.setBitmap(bitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
         }
     }
 
@@ -174,19 +167,12 @@ public class MainActivity extends AppCompatActivity {
             WallpaperManager myWallpaperManager
                     = WallpaperManager.getInstance(getApplicationContext());
 
-            //Return if the thread is interrupted
-            if(Thread.interrupted()) {
-                return;
-            }
-            else {
-                try {
-                    myWallpaperManager.setBitmap(bitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            try {
+                myWallpaperManager.setBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-
     }
 
     /* functions calculateInSampleSize and decodeSampleBitmap adapted from:
