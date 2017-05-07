@@ -25,6 +25,13 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".MyIntentService"
+            android:exported="false" />
+        <service
+            android:name=".BackgroundService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

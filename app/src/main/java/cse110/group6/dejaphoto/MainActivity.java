@@ -69,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
                     MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE);
             return;
         }
+        //Call a service to run in the background
+        startService(new Intent(this,BackgroundService.class));
 
         /* instantiate the PhotoAlbum object, then initialize it first with the
             most recent image in the gallery */
