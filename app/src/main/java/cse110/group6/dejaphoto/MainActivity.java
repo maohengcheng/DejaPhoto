@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     PhotoAlbum photos;
     SwipeListener swipeListener;
     Bitmap bitmap;
+    File imageFile;
 
     private static boolean released = FALSE; // temporary field for testing release button
 
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 photos.getImages(), null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
         imageLoc = photos.getMostRecentImage();
         if(imageLoc != null) {
-            File imageFile = new File(imageLoc);
+            imageFile = new File(imageLoc);
             setBackgroundAndView(imageLoc, imageView, imageFile);
         } else {
             Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSwipeRight() {
                 imageLoc = photos.getPrevImage();
                 if(imageLoc != null) {
-                    File imageFile = new File(imageLoc);
+                    imageFile = new File(imageLoc);
                     setBackgroundAndView(imageLoc, imageView, imageFile);
                 } else {
                     Toast.makeText(MainActivity.this, "No previous image", Toast.LENGTH_SHORT).show();
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSwipeLeft() {
                 imageLoc = photos.getNextImage();
                 if(imageLoc != null) {
-                    File imageFile = new File(imageLoc);
+                    imageFile = new File(imageLoc);
                     setBackgroundAndView(imageLoc, imageView, imageFile);
                 } else {
                     Toast.makeText(MainActivity.this, "No next image", Toast.LENGTH_SHORT).show();
@@ -121,6 +122,72 @@ public class MainActivity extends AppCompatActivity {
     }
     /* end of onCreate */
 
+    @Override
+    protected void onPause(){
+        super.onPause();
+        //String imageLoc, ImageView imageView, File imageFile
+
+        bitmap = decodeFile(imageLoc);
+        /* bJPGcompress adapted from:
+            http://android.okhelp.cz/compressing-a-bitmap-to-jpg-format-android-example/ */
+        // Best of quality is 80 and more, 3 is very low quality of image
+        ////Bitmap bJPGcompress = codec(bitmap, Bitmap.CompressFormat.JPEG, 1);
+        //Bitmap bitmap = BitmapFactory.decodeFile(imageLoc);
+
+        /*check if image exists, then set imageView and background */
+        if(imageFile.exists() && imageLoc != null) {
+            imageView.setImageBitmap(bitmap);
+
+                WallpaperManager myWallpaperManager
+                        = WallpaperManager.getInstance(getApplicationContext());
+
+                //Return if the thread is interrupted
+            if(Thread.interrupted()) {
+                return;
+            }
+            else {
+                try {
+                    myWallpaperManager.setBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
+
+        bitmap = decodeFile(imageLoc);
+        /* bJPGcompress adapted from:
+            http://android.okhelp.cz/compressing-a-bitmap-to-jpg-format-android-example/ */
+        // Best of quality is 80 and more, 3 is very low quality of image
+        ////Bitmap bJPGcompress = codec(bitmap, Bitmap.CompressFormat.JPEG, 1);
+        //Bitmap bitmap = BitmapFactory.decodeFile(imageLoc);
+
+        /*check if image exists, then set imageView and background */
+        if(imageFile.exists() && imageLoc != null) {
+            imageView.setImageBitmap(bitmap);
+
+            WallpaperManager myWallpaperManager
+                    = WallpaperManager.getInstance(getApplicationContext());
+
+            //Return if the thread is interrupted
+            if(Thread.interrupted()) {
+                return;
+            }
+            else {
+                try {
+                    myWallpaperManager.setBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
 
     /* functions calculateInSampleSize and decodeSampleBitmap adapted from:
         https://developer.android.com/topic/performance/graphics/load-bitmap.html */
@@ -183,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
         specified by the image's file location
      */
     @RequiresApi(api = Build.VERSION_CODES.ECLAIR)
-    private void setBackgroundAndView(String imageLoc, ImageView imageView, File imageFile) {
+    private synchronized void setBackgroundAndView(String imageLoc, ImageView imageView, File imageFile) {
         //final Bitmap bitmap =
           //     decodeSampledBitmap(imageLoc, imageFile, screenWidth, screenHeight);
 
@@ -201,6 +268,7 @@ public class MainActivity extends AppCompatActivity {
             /* set the background in a separate thread to improve app runtime
                 speed
                 */
+            /*
             Thread set = new Thread() {
                 WallpaperManager myWallpaperManager
                         = WallpaperManager.getInstance(getApplicationContext());
@@ -220,13 +288,16 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             };
-            set.start();
+            set.start();*/
+
+            /*
             if(Thread.getAllStackTraces().keySet().size() > 2) {
                 for (Thread t : Thread.getAllStackTraces().keySet()) {
                     t.interrupt();
                     System.gc();
                 }
             }
+            */
             //int nbThreads = Thread.getAllStackTraces().keySet().size();
             /*int nbRunning = 0;
             for(Thread t : Thread.getAllStackTraces().keySet()) {
