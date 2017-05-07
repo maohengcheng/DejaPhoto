@@ -14,21 +14,24 @@ import android.view.View;
 class SwipeListener implements View.OnTouchListener {
     private final GestureDetector gestureDetector;
 
+    /* initialize the gesturedectector */
     public SwipeListener(Context context){
         gestureDetector = new GestureDetector(context, new GestureListener());
     }
 
+    /* getter for gesturedetector */
     public GestureDetector getGestureDetector(){
         return gestureDetector;
     }
 
+    /* responds to onTouch events */
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
     }
 
+    /* responds to when the user swipes */
     private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
-
         private static final int swipeDistanceThreshold = 80;
         private static final int swipeSpeedThreshold = 80;
 
@@ -68,6 +71,8 @@ class SwipeListener implements View.OnTouchListener {
         }
     }
 
+    /* collection of functions that respond to swipes left or right and whos
+        functionality can be cahnged */
     public void onSwipeRight() {
     }
 

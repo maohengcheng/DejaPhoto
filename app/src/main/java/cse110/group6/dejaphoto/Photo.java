@@ -1,110 +1,84 @@
 package cse110.group6.dejaphoto;
 
-import android.database.Cursor;
-import android.net.Uri;
-import android.provider.MediaStore;
-
 /**
- * Created by stevennatalius on 5/3/17.
+ * Created by Michael on 5/6/2017.
  */
 
 public class Photo {
-    String[] projectImage;
-    Cursor cursor;
+    String filePath;
+    double longitude;
+    double latitude;
+    long dateTaken;
+    boolean karma;
+    boolean released;
     double weight;
-    boolean isReleased;
-    final double MAGIC_NUMBER = 10.0;
-    int columnIndex;
-    String imageLoc;
 
-    Photo() {
-        projectImage = new String[] {
-                MediaStore.Images.ImageColumns._ID,
-                MediaStore.Images.ImageColumns.DATA,
-                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
-                MediaStore.Images.ImageColumns.DATE_TAKEN,
-                MediaStore.Images.ImageColumns.MIME_TYPE,
-        };
-        isReleased = false;
-        columnIndex = 1;
-        weight = MAGIC_NUMBER;
+    /* constructor */
+    public Photo(String filePath, double longitude, double latitude, long dateTaken, boolean karma, boolean released, double weight) {
+        this.filePath = filePath;
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.dateTaken = dateTaken;
+        this.karma = karma;
+        this.released = released;
+        this.weight = weight;
     }
 
-    public String[] getImages() {
-        return projectImage;
+    /* setters */
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
-    public Cursor getCursor() {
-        return cursor;
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
-    public void setCursor (Cursor currentCursor) {
-        cursor = currentCursor;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 
-    public String getMostRecentImage () {
-        /*
-        new Thread() {
-            public void run() {
-                try {
-                    cursor.moveToFirst();
-                    imageLoc = cursor.getString(columnIndex);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-        return imageLoc;
-        */
-        if(cursor.moveToFirst()) {
-            return cursor.getString(columnIndex);
-        }
-        else
-            return null;
+    public void setDateTaken(long dateTaken) {
+        this.dateTaken = dateTaken;
     }
 
-    public String getNextImage() {
-        /*
-        new Thread() {
-            public void run() {
-                try {
-                    cursor.moveToNext();
-                    imageLoc = cursor.getString(columnIndex);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-        return imageLoc;*/
-        if(cursor.moveToNext()) {
-            return cursor.getString(columnIndex);
-        } else
-            return null;
+    public void setKarma(boolean karma) {
+        this.karma = karma;
     }
 
-    public String getPrevImage() {
-        /*
-        new Thread() {
-            public void run() {
-                try {
-                    cursor.moveToPrevious();
-                    imageLoc = cursor.getString(columnIndex);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
-        return imageLoc;*/
-        if(cursor.moveToPrevious()) {
-            return cursor.getString(columnIndex);
-        } else
-            return null;
+    public void setReleased(boolean released) {
+        this.released = released;
     }
 
-    public void closeCursor() {
-        cursor.close();
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
 
+    /* getters */
+    public String getFilePath() {
+        return filePath;
+    }
 
+    public double getLongitude() {
+        return longitude;
+    }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public long getDateTaken() {
+        return dateTaken;
+    }
+
+    public boolean isKarma() {
+        return karma;
+    }
+
+    public boolean isReleased() {
+        return released;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
 }

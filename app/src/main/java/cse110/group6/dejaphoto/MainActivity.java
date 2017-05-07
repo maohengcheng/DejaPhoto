@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2012;
     int screenWidth;
     int screenHeight;
-    Photo photos;
+    PhotoAlbum photos;
     SwipeListener swipeListener;
 
     private static boolean released = FALSE; // temporary field for testing release button
@@ -70,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        /* instantiate the Photo object, then initialize it first with the
+        /* instantiate the PhotoAlbum object, then initialize it first with the
             most recent image in the gallery */
-        photos = new Photo();
+        photos = new PhotoAlbum();
         photos.setCursor(getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 photos.getImages(), null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
         imageLoc = photos.getMostRecentImage();
@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
         }
+        photos.initializePhotos();
 
         /* swipe left and right code adapted from:
             http://stackoverflow.com/questions/4139288/android-how-to-handle-right-to-left-swipe-gestures */
@@ -324,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
     public void giveKarma(View view) {
         ImageButton button = (ImageButton) findViewById(R.id.karmaButton);
         button.setImageResource(R.mipmap.ic_karma);
-        Toast.makeText(this, "Photo has been given good karma!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "PhotoAlbum has been given good karma!", Toast.LENGTH_SHORT).show();
     }
 
     public void releasePhoto(View view) {
@@ -332,11 +333,11 @@ public class MainActivity extends AppCompatActivity {
 
         if(released) {
             button.setImageResource(R.mipmap.ic_release);
-            Toast.makeText(this, "Photo is no longer released", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "PhotoAlbum is no longer released", Toast.LENGTH_SHORT).show();
         }
         else {
             button.setImageResource(R.mipmap.ic_undo);
-            Toast.makeText(this, "Photo is released", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "PhotoAlbum is released", Toast.LENGTH_SHORT).show();
         }
 
         released = !released;
