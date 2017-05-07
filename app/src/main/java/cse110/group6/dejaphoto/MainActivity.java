@@ -205,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
                         = WallpaperManager.getInstance(getApplicationContext());
 
                 public void run() {
+                        //Return if the thread is interrupted
                         if(Thread.interrupted()) {
                             return;
                         }
