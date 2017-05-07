@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     int screenHeight;
     PhotoAlbum photos;
     SwipeListener swipeListener;
+    Bitmap bitmap;
 
     private static boolean released = FALSE; // temporary field for testing release button
 
@@ -183,10 +184,10 @@ public class MainActivity extends AppCompatActivity {
      */
     @RequiresApi(api = Build.VERSION_CODES.ECLAIR)
     private void setBackgroundAndView(String imageLoc, ImageView imageView, File imageFile) {
-        ////final Bitmap bitmap =
-        ////        decodeSampledBitmap(imageLoc, imageFile, screenWidth, screenHeight);
+        //final Bitmap bitmap =
+          //     decodeSampledBitmap(imageLoc, imageFile, screenWidth, screenHeight);
 
-        final Bitmap bitmap = decodeFile(imageLoc);
+        bitmap = decodeFile(imageLoc);
         /* bJPGcompress adapted from:
             http://android.okhelp.cz/compressing-a-bitmap-to-jpg-format-android-example/ */
         // Best of quality is 80 and more, 3 is very low quality of image
@@ -209,15 +210,35 @@ public class MainActivity extends AppCompatActivity {
                         if(Thread.interrupted()) {
                             return;
                         }
-                        try {
-                            myWallpaperManager.setBitmap(bitmap);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        else {
+                            try {
+                                myWallpaperManager.setBitmap(bitmap);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
+
                 }
             };
             set.start();
-            set.interrupt();
+            if(Thread.getAllStackTraces().keySet().size() > 2) {
+                for (Thread t : Thread.getAllStackTraces().keySet()) {
+                    t.interrupt();
+                    System.gc();
+                }
+            }
+            //int nbThreads = Thread.getAllStackTraces().keySet().size();
+            /*int nbRunning = 0;
+            for(Thread t : Thread.getAllStackTraces().keySet()) {
+                if (t.getState() == Thread.State.RUNNABLE)
+                    nbRunning++;
+            }
+            if(nbRunning > 3) {
+                for(Thread t : Thread.getAllStackTraces().keySet()) {
+                    t.interrupt();
+                    nbRunning--;
+                }
+            }*/
         }
 
     }
