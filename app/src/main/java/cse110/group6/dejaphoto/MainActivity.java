@@ -27,6 +27,7 @@ import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 
 import static android.graphics.BitmapFactory.decodeFile;
 import static java.lang.Boolean.FALSE;
@@ -199,20 +200,25 @@ public class MainActivity extends AppCompatActivity {
             /* set the background in a separate thread to improve app runtime
                 speed
                 */
-            new Thread() {
+            Thread set = new Thread() {
                 WallpaperManager myWallpaperManager
                         = WallpaperManager.getInstance(getApplicationContext());
-                final Bitmap bitmapThread = bitmap;
-                public void run() {
-                    try {
-                        myWallpaperManager.setBitmap(bitmapThread);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
 
+                public void run() {
+                        if(Thread.interrupted()) {
+                            return;
+                        }
+                        try {
+                            myWallpaperManager.setBitmap(bitmap);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                }
+            };
+            set.start();
+            set.interrupt();
         }
+
     }
 
     @Override
