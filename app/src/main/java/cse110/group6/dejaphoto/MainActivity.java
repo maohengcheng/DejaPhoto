@@ -125,9 +125,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
-        //String imageLoc, ImageView imageView, File imageFile
+        Intent intent = new Intent(MainActivity.this, SetBackground.class);
+        intent.putExtra("filepath", imageLoc);
+        //intent.putExtra("filepaths", photos.getPhotos());
+        startService(intent);
 
-        bitmap = decodeFile(imageLoc);
+        //bitmap = decodeSampledBitmap(imageLoc, imageFile, screenWidth, screenHeight);
         /* bJPGcompress adapted from:
             http://android.okhelp.cz/compressing-a-bitmap-to-jpg-format-android-example/ */
         // Best of quality is 80 and more, 3 is very low quality of image
@@ -135,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         //Bitmap bitmap = BitmapFactory.decodeFile(imageLoc);
 
         /*check if image exists, then set imageView and background */
+        /*
         if(imageFile.exists() && imageLoc != null) {
             imageView.setImageBitmap(bitmap);
 
@@ -146,14 +150,19 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 
     @Override
     protected void onStop(){
         super.onStop();
+        Intent intent = new Intent(MainActivity.this, SetBackground.class);
+        intent.putExtra("filepath", imageLoc);
+        //intent.putExtra("filepaths", photos.getPhotos());
+        startService(intent);
 
-        bitmap = decodeFile(imageLoc);
+        //bitmap = decodeFile(imageLoc);
+        //bitmap = decodeSampledBitmap(imageLoc, imageFile, screenWidth, screenHeight);
         /* bJPGcompress adapted from:
             http://android.okhelp.cz/compressing-a-bitmap-to-jpg-format-android-example/ */
         // Best of quality is 80 and more, 3 is very low quality of image
@@ -161,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
         //Bitmap bitmap = BitmapFactory.decodeFile(imageLoc);
 
         /*check if image exists, then set imageView and background */
+        /*
         if(imageFile.exists() && imageLoc != null) {
             imageView.setImageBitmap(bitmap);
 
@@ -172,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 
     /* functions calculateInSampleSize and decodeSampleBitmap adapted from:
@@ -412,6 +422,9 @@ public class MainActivity extends AppCompatActivity {
     public void giveKarma(View view) {
         ImageButton button = (ImageButton) findViewById(R.id.karmaButton);
         button.setImageResource(R.mipmap.ic_karma);
+        //get current images position in photoalbum
+        // set current photo's karma to true
+        //calcweight
         Toast.makeText(this, "PhotoAlbum has been given good karma!", Toast.LENGTH_SHORT).show();
     }
 

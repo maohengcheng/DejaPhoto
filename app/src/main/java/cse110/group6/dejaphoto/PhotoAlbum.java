@@ -91,4 +91,8 @@ public class PhotoAlbum {
     public void closeCursor() {
         cursor.close();
     }
+
+    public Vector<Photo> getPhotos() {
+        return photos;
+    }
 }
