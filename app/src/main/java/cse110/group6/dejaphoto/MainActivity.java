@@ -2,7 +2,6 @@ package cse110.group6.dejaphoto;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,10 +25,11 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InterruptedIOException;
 
 import static android.graphics.BitmapFactory.decodeFile;
+import static cse110.group6.dejaphoto.R.mipmap.ic_karma_gray;
+import static cse110.group6.dejaphoto.R.mipmap.ic_release;
+import static cse110.group6.dejaphoto.R.mipmap.ic_undo;
 import static java.lang.Boolean.FALSE;
 
 public class MainActivity extends AppCompatActivity {
@@ -45,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
     Bitmap bitmap;
     File imageFile;
 
-    private static boolean released = FALSE; // temporary field for testing release button
-
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +56,10 @@ public class MainActivity extends AppCompatActivity {
 
         /* get phone resolution */
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE); // the results will be higher than using the activity context object or the getWindowManager() shortcut
+        WindowManager wm = (WindowManager) getApplicationContext().
+                getSystemService(Context.WINDOW_SERVICE);
+        // the results will be higher than using the activity context object or the getWindowManager() shortcut
+
         wm.getDefaultDisplay().getMetrics(displayMetrics);
         screenWidth = displayMetrics.widthPixels;
         screenHeight = displayMetrics.heightPixels;
@@ -68,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
          */
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+            requestPermissions(new String[]
+                            {Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE);
             return;
         }
@@ -78,12 +80,14 @@ public class MainActivity extends AppCompatActivity {
         /* instantiate the PhotoAlbum object, then initialize it first with the
             most recent image in the gallery */
         photos = new PhotoAlbum();
-        photos.setCursor(getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                photos.getImages(), null, null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
+        photos.setCursor(getContentResolver().
+                query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                photos.getImages(), null, null,
+                MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
         imageLoc = photos.getMostRecentImage();
         if(imageLoc != null) {
             imageFile = new File(imageLoc);
-            setBackgroundAndView(imageLoc, imageView, imageFile);
+            setImageView(imageLoc, imageView, imageFile);
         } else {
             Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
         }
@@ -98,18 +102,22 @@ public class MainActivity extends AppCompatActivity {
                 imageLoc = photos.getPrevImage();
                 if(imageLoc != null) {
                     imageFile = new File(imageLoc);
-                    setBackgroundAndView(imageLoc, imageView, imageFile);
+                    setImageView(imageLoc, imageView, imageFile);
+                    setButtons(imageView);
                 } else {
-                    Toast.makeText(MainActivity.this, "No previous image", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "No previous image",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
             public void onSwipeLeft() {
                 imageLoc = photos.getNextImage();
                 if(imageLoc != null) {
                     imageFile = new File(imageLoc);
-                    setBackgroundAndView(imageLoc, imageView, imageFile);
+                    setImageView(imageLoc, imageView, imageFile);
+                    setButtons(imageView);
                 } else {
-                    Toast.makeText(MainActivity.this, "No next image", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "No next image",
+                            Toast.LENGTH_SHORT).show();
                 }
             }
         };
@@ -122,12 +130,16 @@ public class MainActivity extends AppCompatActivity {
     }
     /* end of onCreate */
 
+    /*
     @Override
     protected void onPause(){
         super.onPause();
         Intent intent = new Intent(MainActivity.this, SetBackground.class);
-        intent.putExtra("filepath", imageLoc);
-        //intent.putExtra("filepaths", photos.getPhotos());
+        intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
+        //List<Photo> tempPhotos = new ArrayList<Photo>();
+        //tempPhotos = photos.getPhotos();
+        //intent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
+        //intent.putExtra("photoPos", photos.getCursor().getPosition()); // passing in the position of the current photo in the vector of photos
         startService(intent);
 
         //bitmap = decodeSampledBitmap(imageLoc, imageFile, screenWidth, screenHeight);
@@ -151,14 +163,15 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }*/
-    }
+    //}
 
     @Override
     protected void onStop(){
         super.onStop();
         Intent intent = new Intent(MainActivity.this, SetBackground.class);
-        intent.putExtra("filepath", imageLoc);
-        //intent.putExtra("filepaths", photos.getPhotos());
+        intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
+        //intent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
+        //intent.putExtra("photoPos", photos.getCursor().getPosition()); // passing in the position of the current photo in the vector of photos
         startService(intent);
 
         //bitmap = decodeFile(imageLoc);
@@ -222,7 +235,8 @@ public class MainActivity extends AppCompatActivity {
         decodeFile(imageLoc, options);
 
         /* calculate inSampleSize */
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        options.inSampleSize = calculateInSampleSize(options, reqWidth,
+                reqHeight);
 
         /* decode without checking image dimensions */
         options.inJustDecodeBounds = false;
@@ -246,7 +260,8 @@ public class MainActivity extends AppCompatActivity {
         specified by the image's file location
      */
     @RequiresApi(api = Build.VERSION_CODES.ECLAIR)
-    private synchronized void setBackgroundAndView(String imageLoc, ImageView imageView, File imageFile) {
+    private synchronized void setImageView(String imageLoc,
+                                           ImageView imageView, File imageFile) {
         //final Bitmap bitmap =
           //     decodeSampledBitmap(imageLoc, imageFile, screenWidth, screenHeight);
 
@@ -311,8 +326,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult
+            (int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE: {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -349,7 +364,7 @@ public class MainActivity extends AppCompatActivity {
         imageLoc = photos.getNextImage();
         if(imageLoc != null) {
             File imageFile = new File(imageLoc);
-            setBackgroundAndView(imageLoc, imageView, imageFile);
+            setImageView(imageLoc, imageView, imageFile);
         } else {
             Toast.makeText(this, "No next image", Toast.LENGTH_SHORT).show();
         }
@@ -362,9 +377,10 @@ public class MainActivity extends AppCompatActivity {
         imageLoc = photos.getPrevImage();
         if(imageLoc != null) {
             File imageFile = new File(imageLoc);
-            setBackgroundAndView(imageLoc, imageView, imageFile);
+            setImageView(imageLoc, imageView, imageFile);
         } else {
-            Toast.makeText(this, "No previous image", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No previous image", Toast.LENGTH_SHORT)
+                    .show();
         }
 
     }
@@ -383,12 +399,14 @@ public class MainActivity extends AppCompatActivity {
                 /* get image data with a uri */
                 Uri photoUri = data.getData();
                 /* get actual image from uri */
-                photos.setCursor(getContentResolver().query(photoUri, photos.getImages(), null, null, null));
+                photos.setCursor(getContentResolver().query(photoUri,
+                        photos.getImages(), null, null, null));
                 imageLoc = photos.getMostRecentImage();
                 File imageFile = new File(imageLoc);
-                setBackgroundAndView(imageLoc, imageView, imageFile);
+                setImageView(imageLoc, imageView, imageFile);
             } else {
-                Toast.makeText(this, "No image selected", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "No image selected",
+                        Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             Toast.makeText(this, "error", Toast.LENGTH_LONG).show();
@@ -419,27 +437,69 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /* function called for when the karma button is pressed */
     public void giveKarma(View view) {
         ImageButton button = (ImageButton) findViewById(R.id.karmaButton);
         button.setImageResource(R.mipmap.ic_karma);
+
         //get current images position in photoalbum
+        int photoPos = photos.getCursor().getPosition();
+        Photo karmaPhoto = photos.getPhotos().get(photoPos);
         // set current photo's karma to true
-        //calcweight
-        Toast.makeText(this, "PhotoAlbum has been given good karma!", Toast.LENGTH_SHORT).show();
+        karmaPhoto.setKarma(true);
+        //calculate the weight of the current photo now
+        karmaPhoto.calcWeight();
+
+        Toast.makeText(this, karmaPhoto.getFilePath() + " has been given " +
+                "good karma!", Toast.LENGTH_SHORT).show();
     }
 
+    /* function called for when the release button is pressed */
     public void releasePhoto(View view) {
         ImageButton button = (ImageButton) findViewById(R.id.releaseButton);
+        int photoPos = photos.getCursor().getPosition();
+        Photo releasePhoto = photos.getPhotos().get(photoPos);
 
-        if(released) {
+        // check if photo was released or not, then act accordingly by setting
+        // the released flag to the opposite boolean value
+        if(releasePhoto.isReleased()) {
             button.setImageResource(R.mipmap.ic_release);
-            Toast.makeText(this, "PhotoAlbum is no longer released", Toast.LENGTH_SHORT).show();
+            releasePhoto.setReleased(false);
+            releasePhoto.calcWeight();
+            Toast.makeText(this, releasePhoto.getFilePath() + " is no longer " +
+                    "released", Toast.LENGTH_SHORT).show();
         }
         else {
             button.setImageResource(R.mipmap.ic_undo);
-            Toast.makeText(this, "PhotoAlbum is released", Toast.LENGTH_SHORT).show();
+            releasePhoto.setReleased(true);
+            releasePhoto.calcWeight();
+            Toast.makeText(this, releasePhoto.getFilePath() + "PhotoAlbum " +
+                    "is released", Toast.LENGTH_SHORT).show();
         }
 
-        released = !released;
+    }
+
+    /* function to update the karma and release buttons to the correct icon */
+    public void setButtons(View view){
+        ImageButton karmaButton = (ImageButton) findViewById(R.id.karmaButton);
+        ImageButton releaseButton = (ImageButton) findViewById(R.id.releaseButton);
+        int photoPos = photos.getCursor().getPosition();
+        Photo currPhoto = photos.getPhotos().get(photoPos);
+
+        /* set the karma buttona for this picture to the correct icon */
+        if (currPhoto.isKarma()){
+            karmaButton.setImageResource(R.mipmap.ic_karma);
+        }
+        else{
+            karmaButton.setImageResource(ic_karma_gray);
+        }
+
+        /* set the release button for this picture to the correct icon */
+        if(currPhoto.isReleased()){
+            releaseButton.setImageResource(ic_undo);
+        }
+        else{
+            releaseButton.setImageResource(ic_release);
+        }
     }
 }

@@ -42,10 +42,13 @@ class SwipeListener implements View.OnTouchListener {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float xCoordinate, float yCoordinate) {
+            /* boolean for if a swipe was detected successfully or not */
             boolean result = false;
             try {
+                /* get how far the swipe was */
                 double diffY = e2.getY() - e1.getY();
                 double diffX = e2.getX() - e1.getX();
+                /* check if horizantal swipe and which direction */
                 if (Math.abs(diffX) > Math.abs(diffY)) {
                     if (Math.abs(diffX) > swipeDistanceThreshold && Math.abs(xCoordinate) > swipeSpeedThreshold) {
                         if (diffX > 0) {
@@ -56,6 +59,7 @@ class SwipeListener implements View.OnTouchListener {
                         result = true;
                     }
                 }
+                /* check if vertical swipe and which direction */
                 else if (Math.abs(diffY) > swipeDistanceThreshold && Math.abs(yCoordinate) > swipeSpeedThreshold) {
                     if (diffY > 0) {
                         onSwipeBottom();

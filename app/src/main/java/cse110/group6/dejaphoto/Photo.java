@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.database.Cursor;
 import android.os.Build;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -11,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created by Michael on 5/6/2017.
  */
 
-public class Photo {
+public class Photo implements Serializable{
     String filePath;
     double longitude;
     double latitude;

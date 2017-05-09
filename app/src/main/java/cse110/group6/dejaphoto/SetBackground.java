@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
@@ -24,7 +25,7 @@ import static android.graphics.BitmapFactory.decodeFile;
  * TODO: Customize class - update intent actions, extra parameters and static
  * helper methods.
  */
-public class SetBackground extends IntentService {
+public class SetBackground extends IntentService{
     // TODO: Rename actions, choose action names that describe tasks that this
     // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
     private static final String ACTION_FOO = "cse110.group6.dejaphoto.action.FOO";
@@ -83,14 +84,20 @@ public class SetBackground extends IntentService {
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
             synchronized (this) {
+                /* below block of code if for getting the vector of photos */
+                /* to be used in the BackgroundService class, which will pass a single string to this service to set the background */
                 //try {
-                //List<Photo> photos = (List<Photo>) intent.getExtras().get("filepaths");
+                //List<Photo> photos = (List<Photo>) intent.getExtras().getSerializable("filepaths");
                 /*
                 if(objects != null) {
                     String a = objects.getARr
                 }*/
-                //Photo photo = photos.get(1);
+                //int photoPos = intent.getIntExtra("photoPos", 0);
+                //Photo photo = photos.get(photoPos);
                 //String filePath = photo.getFilePath();
+
+
+                /* get the images filepath and then set the background */
                 String filePath = intent.getStringExtra("filepath");
                 Bitmap bitmap = decodeFile(filePath);
                 File imageFile = new File(filePath);
