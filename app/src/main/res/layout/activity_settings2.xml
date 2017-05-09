@@ -5,77 +5,94 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="cse110.group6.dejaphoto.Settings"
-    tools:showIn="@layout/activity_settings">
+    tools:context="cse110.group6.dejaphoto.Settings">
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="DEFAULT ALBUM:"
-        android:textSize="40dp"
+        android:text="SETTINGS MENU:"
+        android:textSize="20sp"
         />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time until new photo:"
+        android:textSize="25sp"
+        android:layout_marginTop="40dp"
+        />
+
+
+    <Spinner
+        android:id="@+id/spinner_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-26dp"
+        android:layout_marginStart="260dp"
+        >    </Spinner>
+
+    
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="LOCATION:"
-        android:textSize="40dp"
-        android:layout_marginTop="80dp"
+        android:textSize="25sp"
+        android:layout_marginTop="60dp"
         />
+    
 
     <ImageButton
         android:id="@+id/locationToggle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:onClick=""
-        android:src="@mipmap/ic_launcher_round"
-        android:layout_marginTop="-50dp"
-        android:layout_marginLeft="300dp"
+        app:srcCompat="@android:drawable/checkbox_on_background"
+        android:layout_marginTop="-38dp"
+        android:layout_marginStart="300dp"
         />
-
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="DAY OF THE WEEK:"
-        android:textSize="30dp"
+        android:textSize="25sp"
         android:layout_marginTop="60dp"
         />
 
     <ImageButton
         android:id="@+id/dowToggle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:onClick=""
-        android:src="@mipmap/ic_launcher_round"
-        android:layout_marginTop="-40dp"
-        android:layout_marginLeft="300dp"
+        app:srcCompat="@android:drawable/checkbox_on_background"
+        android:layout_marginTop="-35dp"
+        android:layout_marginStart="300dp"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TIME OF DAY:"
-        android:textSize="30dp"
+        android:textSize="25sp"
         android:layout_marginTop="50dp"
         />
 
     <ImageButton
         android:id="@+id/towToggle"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:onClick=""
-        android:src="@mipmap/ic_launcher_round"
-        android:layout_marginTop="-40dp"
-        android:layout_marginLeft="300dp"
+        app:srcCompat="@android:drawable/checkbox_on_background"
+        android:layout_marginTop="-35dp"
+        android:layout_marginStart="300dp"
         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="KARMA:"
-        android:textSize="30dp"
+        android:textSize="25sp"
         android:layout_marginTop="50dp"
         />
 
@@ -84,10 +101,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick=""
-        android:src="@mipmap/ic_launcher_round"
-        android:layout_marginTop="-50dp"
-        android:layout_marginLeft="290dp"
+        app:srcCompat="@android:drawable/checkbox_on_background"
+        android:layout_marginTop="-40dp"
+        android:layout_marginStart="300dp"
         />
+
 
 
 </android.support.v7.widget.LinearLayoutCompat>
