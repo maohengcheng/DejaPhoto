@@ -20,6 +20,7 @@ public class PhotoAlbum implements Serializable{
     String imageLoc;
     Vector<Photo> photos;
 
+
     /* constructor */
     PhotoAlbum() {
         projectImage = new String[] {

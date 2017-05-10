@@ -26,20 +26,21 @@ import static android.graphics.BitmapFactory.decodeFile;
 public class BackgroundService extends Service {
 
     //from stackoverflow.com/questions/15754195/android-toast-message-every-1-minute
-    public static final long INTERVAL = 15000;
+    public static final long INTERVAL = 25000; //25seconds
     private Handler mHandler = new Handler();
     private Timer mTimer=null;
-    private List<Photo> photos;
+    private List<Photo> photosVector;
     private int photoPos;
     private Photo photo;
     private String filePath;
+    PhotoAlbum photoAlbumref;
     @Nullable
 
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
 
-        filePath = intent.getStringExtra("filepath");
+       // filePath = intent.getStringExtra("filepath");
 
         throw new UnsupportedOperationException("Not yet implemented");
     }
@@ -62,6 +63,9 @@ public class BackgroundService extends Service {
         // stopped, so return sticky.
 
         filePath = intent.getStringExtra("filepath");
+        photosVector = (List<Photo>) intent.getExtras().getSerializable("filepaths");
+        photoPos = intent.getIntExtra("photoPos", 0);
+
 
         mTimer.scheduleAtFixedRate(new TimeDisplayTimerTask(),0,INTERVAL);
 
@@ -85,9 +89,9 @@ public class BackgroundService extends Service {
                 public void run(){
                     //display a Toast every 20secs I think
                     //String name = "Bwahhhh";
-
-            //        String filePath = photo.getFilePath();
+                    filePath = photosVector.get(photoPos).getFilePath();
                     Toast.makeText(getApplicationContext(),filePath, Toast.LENGTH_SHORT).show();
+                    photoPos++;
 
                 /* get the images filepath and then set the background */
 

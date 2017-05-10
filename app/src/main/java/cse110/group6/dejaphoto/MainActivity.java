@@ -93,9 +93,9 @@ public class MainActivity extends AppCompatActivity {
         photos.initializePhotos();
 
         Intent otherIntent = new Intent(MainActivity.this, BackgroundService.class);
-        //otherIntent.putExtra("myPhotos", photos); //passing the whole god damn photoAlbum that's named photos?!
-      //  otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
-    //    otherIntent.putExtra("photoPos", photos.getCursor().getPosition()); // passing in the position of the current photo in the vector of photos
+       // otherIntent.putExtra("myPhotos", photos); //passing the whole god damn photoAlbum that's named photos?!
+        otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
+        otherIntent.putExtra("photoPos", photos.getCursor().getPosition()); // passing in the position of the current photo in the vector of photos
         otherIntent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
 
         //Call a service to run in the background
