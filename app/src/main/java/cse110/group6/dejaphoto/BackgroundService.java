@@ -87,7 +87,6 @@ public class BackgroundService extends Service {
                     //String name = "Bwahhhh";
 
             //        String filePath = photo.getFilePath();
-
                     Toast.makeText(getApplicationContext(),filePath, Toast.LENGTH_SHORT).show();
 
                 /* get the images filepath and then set the background */

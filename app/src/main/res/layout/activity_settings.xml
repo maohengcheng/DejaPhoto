@@ -20,8 +20,11 @@
 
     </android.support.design.widget.AppBarLayout>
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> c0e59a26519ef6f6b98f71c5ed55e182be4aeacb
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
