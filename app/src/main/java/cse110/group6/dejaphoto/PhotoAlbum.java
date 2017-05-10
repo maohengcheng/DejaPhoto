@@ -4,13 +4,15 @@ import android.annotation.TargetApi;
 import android.database.Cursor;
 import android.os.Build;
 import android.provider.MediaStore;
+
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Created by stevennatalius on 5/3/17.
  */
 
-public class PhotoAlbum {
+public class PhotoAlbum implements Serializable{
     String[] projectImage;
     Cursor cursor;
     int filePathIndex;

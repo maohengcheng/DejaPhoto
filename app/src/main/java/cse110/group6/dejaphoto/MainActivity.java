@@ -74,8 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE);
             return;
         }
-        //Call a service to run in the background
-        startService(new Intent(this,BackgroundService.class));
+
 
         /* instantiate the PhotoAlbum object, then initialize it first with the
             most recent image in the gallery */
@@ -92,6 +91,15 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
         }
         photos.initializePhotos();
+
+        Intent otherIntent = new Intent(MainActivity.this, BackgroundService.class);
+        //otherIntent.putExtra("myPhotos", photos); //passing the whole god damn photoAlbum that's named photos?!
+      //  otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
+    //    otherIntent.putExtra("photoPos", photos.getCursor().getPosition()); // passing in the position of the current photo in the vector of photos
+        otherIntent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
+
+        //Call a service to run in the background
+        startService(otherIntent);
 
         /* swipe left and right code adapted from:
             http://stackoverflow.com/questions/4139288/android-how-to-handle-right-to-left-swipe-gestures */
@@ -170,9 +178,11 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         Intent intent = new Intent(MainActivity.this, SetBackground.class);
         intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
-        //intent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
-        //intent.putExtra("photoPos", photos.getCursor().getPosition()); // passing in the position of the current photo in the vector of photos
+
+
         startService(intent);
+
+
 
         //bitmap = decodeFile(imageLoc);
         //bitmap = decodeSampledBitmap(imageLoc, imageFile, screenWidth, screenHeight);

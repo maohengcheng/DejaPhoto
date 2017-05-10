@@ -119,6 +119,10 @@ public class SetBackground extends IntentService{
                         e.printStackTrace();
                     }
                 }
+
+
+
+
                     //wait(15000);
                 //} catch (IOException e) {
                 //    e.printStackTrace();
