@@ -33,7 +33,7 @@ public class BackgroundService extends Service {
     private int photoPos;
     private Photo photo;
     private String filePath;
-    PhotoAlbum photoAlbumref;
+
     @Nullable
 
     @Override
@@ -62,7 +62,7 @@ public class BackgroundService extends Service {
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
 
-        filePath = intent.getStringExtra("filepath");
+        //use getExtra to get the values we passed with intent from mainActivity
         photosVector = (List<Photo>) intent.getExtras().getSerializable("filepaths");
         photoPos = intent.getIntExtra("photoPos", 0);
 
@@ -87,10 +87,10 @@ public class BackgroundService extends Service {
             mHandler.post(new Runnable(){
                 @Override
                 public void run(){
-                    //display a Toast every 20secs I think
-                    //String name = "Bwahhhh";
+
+
                     filePath = photosVector.get(photoPos).getFilePath();
-                    Toast.makeText(getApplicationContext(),filePath, Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getApplicationContext(),filePath, Toast.LENGTH_SHORT).show();
                     photoPos++;
 
                 /* get the images filepath and then set the background */

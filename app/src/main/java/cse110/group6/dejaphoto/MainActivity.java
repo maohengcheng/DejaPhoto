@@ -92,14 +92,23 @@ public class MainActivity extends AppCompatActivity {
         }
         photos.initializePhotos();
 
+        /*--------------------------------------------------------
+        //BackgroundService Call
+        //-Creates an intent called otherIntent
+        //-we use putExtra to passed in variables to the service
+        //
+        //-------------------------------------------------------*/
+
         Intent otherIntent = new Intent(MainActivity.this, BackgroundService.class);
-       // otherIntent.putExtra("myPhotos", photos); //passing the whole god damn photoAlbum that's named photos?!
+
         otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
         otherIntent.putExtra("photoPos", photos.getCursor().getPosition()); // passing in the position of the current photo in the vector of photos
-        otherIntent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
 
-        //Call a service to run in the background
+        //Call the service to run in the background
         startService(otherIntent);
+
+
+
 
         /* swipe left and right code adapted from:
             http://stackoverflow.com/questions/4139288/android-how-to-handle-right-to-left-swipe-gestures */
