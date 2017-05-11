@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageView;
     private String imageLoc;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2012;
+    int MY_PERMISSION_ACCESS_COURSE_LOCATION = 5042;
+    int MY_PERMISSION_ACCESS_FINE_LOCATION = 5048;
     int screenWidth;
     int screenHeight;
     PhotoAlbum photos;
@@ -67,11 +69,24 @@ public class MainActivity extends AppCompatActivity {
         /* get read external storage permission during runtime to get
             access to the gallery
          */
-        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]
                             {Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE);
+            return;
+        }
+
+        // get course location access permission for accessing location
+        if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+            requestPermissions(new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},
+                    MY_PERMISSION_ACCESS_COURSE_LOCATION);
+            return;
+        }
+
+        // get fine location access permission for accessing location
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+            requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSION_ACCESS_FINE_LOCATION);
             return;
         }
 
@@ -102,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         Intent otherIntent = new Intent(MainActivity.this, BackgroundService.class);
 
         otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
-        otherIntent.putExtra("photoPos", photos.getCursor().getPosition()); // passing in the position of the current photo in the vector of photos
+        //otherIntent.putExtra("photoPos", photos.getCursor().getPosition()); // passing in the position of the current photo in the vector of photos
 
         //Call the service to run in the background
         startService(otherIntent);
@@ -467,7 +482,7 @@ public class MainActivity extends AppCompatActivity {
         // set current photo's karma to true
         karmaPhoto.setKarma(true);
         //calculate the weight of the current photo now
-        karmaPhoto.calcWeight();
+        //karmaPhoto.calcWeight(); its ok we got it
 
         Toast.makeText(this, karmaPhoto.getFilePath() + " has been given " +
                 "good karma!", Toast.LENGTH_SHORT).show();
@@ -484,14 +499,12 @@ public class MainActivity extends AppCompatActivity {
         if(releasePhoto.isReleased()) {
             button.setImageResource(R.mipmap.ic_release);
             releasePhoto.setReleased(false);
-            releasePhoto.calcWeight();
             Toast.makeText(this, releasePhoto.getFilePath() + " is no longer " +
                     "released", Toast.LENGTH_SHORT).show();
         }
         else {
             button.setImageResource(R.mipmap.ic_undo);
             releasePhoto.setReleased(true);
-            releasePhoto.calcWeight();
             Toast.makeText(this, releasePhoto.getFilePath() + "PhotoAlbum " +
                     "is released", Toast.LENGTH_SHORT).show();
         }

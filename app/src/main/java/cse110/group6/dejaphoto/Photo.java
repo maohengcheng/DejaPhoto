@@ -2,10 +2,13 @@ package cse110.group6.dejaphoto;
 
 import android.annotation.TargetApi;
 import android.database.Cursor;
+import android.location.Location;
 import android.os.Build;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -16,13 +19,16 @@ public class Photo implements Serializable{
     String filePath;
     double longitude;
     double latitude;
-    long dateTaken;
+    Date dateTaken;
     boolean karma;
     boolean released;
     double weight;
+    private static final long millisecondsInDay = 86400000;
+    private static final long millisecondsInWeek = 7 * millisecondsInDay;
+    private static final long millisecondsInMonth = 30 * millisecondsInDay;
 
     /* constructor */
-    public Photo(String filePath, double longitude, double latitude, long dateTaken, boolean karma, boolean released, double weight) {
+    public Photo(String filePath, double longitude, double latitude, Date dateTaken, boolean karma, boolean released, double weight) {
         this.filePath = filePath;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -45,7 +51,7 @@ public class Photo implements Serializable{
         this.latitude = latitude;
     }
 
-    public void setDateTaken(long dateTaken) {
+    public void setDateTaken(Date dateTaken) {
         this.dateTaken = dateTaken;
     }
 
@@ -74,7 +80,7 @@ public class Photo implements Serializable{
         return latitude;
     }
 
-    public long getDateTaken() {
+    public Date getDateTaken() {
         return dateTaken;
     }
 
@@ -90,99 +96,59 @@ public class Photo implements Serializable{
 
 
     // Recalculates weight for current status (may need fields)
-    void calcWeight() {
-        // Calculate difference in location, add some corresponding value to weight
+    void calcWeight(Location location) {
+        Calendar calendar = Calendar.getInstance();
+        int currDay = calendar.get(Calendar.DAY_OF_WEEK) - 1; // Date class is 0-indexed, Calendar is 1-indexed
+        int currHour = calendar.get(Calendar.HOUR_OF_DAY);
+        long currTime = calendar.getTime().getTime();
 
-        // Calculate difference in time of day
+        weight = 0;
+        float[] result = new float[1];
+        Location.distanceBetween(this.latitude, this.longitude, location.getLatitude(), location.getLongitude(), result);
+        float radius = result[0];
 
-        // Calculate difference in day of the week
+        //location
+        if(radius < 500)
+            weight += 100;
+        else if(radius < 2000){
+            weight += 50;
+        }else if(radius < 5000){
+            weight += 25;
+        }
 
-        // Karma
+        //karma
+        if(this.karma){
+            weight += 75;
+        }
+
+        //recency
+        long photoTimeTaken = dateTaken.getTime();
+        if(currTime - photoTimeTaken < millisecondsInDay){
+            weight += 50;
+        }else if(currTime - photoTimeTaken < millisecondsInWeek){
+            weight += 20;
+        }else if(currTime - photoTimeTaken < millisecondsInMonth){
+            weight += 10;
+        }
+
+
+        //day
+        int photoDayOfWeek = dateTaken.getDay();
+        int photoHourOfDay = dateTaken.getHours();
+
+        if(currDay != photoDayOfWeek)
+            weight += 25;
+
+        //time
+        int diffTime = Math.abs(photoHourOfDay - currHour);
+        if(diffTime == 0)
+            weight += 25;
+        if(diffTime < 3 || diffTime > 21)
+            weight += 15;
     }
 
     // Accessor method for weight
     double getWeight() {
         return weight;
-    }
-
-    // Choose photo algorithm, move to service class when made
-    // This assumes that all photos are not released and can be chosen
-    @TargetApi(Build.VERSION_CODES.M)
-    static Photo choosePhoto(Photo[] photos) {
-        for(Photo photo : photos)
-            photo.calcWeight();
-
-        if(photos.length > 4) {
-            // Initialize data structures
-            ArrayList<Photo> otherPhotos = new ArrayList<Photo>(photos.length);
-            Photo[] topPhotos = {photos[0], photos[1], photos[2], photos[3]};
-            sortPhotos(topPhotos);
-
-            // Sort photos into top 4 and other
-            for(int i = 4; i < photos.length; i++) {
-                if(photos[i].getWeight() > topPhotos[3].getWeight()) {
-                    otherPhotos.add(topPhotos[3]);
-                    insertPhoto(topPhotos, photos[i]);
-                }
-                else
-                    otherPhotos.add(photos[i]);
-            }
-
-            // Choose photo: [40%, 30%, 15%, 10%], 5%
-            int randomInt = ThreadLocalRandom.current().nextInt(0, 100);
-
-            if(randomInt < 40)
-                return topPhotos[0];
-
-            if(randomInt < 70)
-                return topPhotos[1];
-
-            if(randomInt < 85)
-                return topPhotos[2];
-
-            if(randomInt < 95)
-                return topPhotos[3];
-
-            randomInt = ThreadLocalRandom.current().nextInt(0, otherPhotos.size());
-            return otherPhotos.get(randomInt);
-
-        }
-        else {
-            Photo[] otherPhotos = new Photo[photos.length];
-            System.arraycopy(photos, 0, otherPhotos, 0, photos.length);
-            sortPhotos(otherPhotos);
-
-            // Choose photo (60% pick first, 40% pick random including first)
-            int randomInt = ThreadLocalRandom.current().nextInt(0, 5);
-            if(randomInt < 3)
-                return otherPhotos[0];
-
-            randomInt = ThreadLocalRandom.current().nextInt(0, photos.length);
-            return otherPhotos[randomInt];
-        }
-    }
-
-    // Insertion sort, descending order
-    private static void sortPhotos(Photo[] photos) {
-        for(int i = 1; i < photos.length; i++) {
-            for(int j = i; j > 0 && photos[j-1].getWeight() < photos[j].getWeight(); j--) {
-                Photo temp = photos[j];
-                photos[j] = photos[j-1];
-                photos[j-1] = temp;
-            }
-        }
-    }
-
-    // Insert photo into array of ascending order by weight, overwriting smallest element
-    private static void insertPhoto(Photo[] photos, Photo photo) {
-        for(int i = photos.length - 1; i > 0; i--) {
-            if(photo.getWeight() > photos[i-1].getWeight())
-                photos[i] = photos[i-1];
-            else {
-                photos[i] = photo;
-                return;
-            }
-        }
-        photos[0] = photo;
     }
 }

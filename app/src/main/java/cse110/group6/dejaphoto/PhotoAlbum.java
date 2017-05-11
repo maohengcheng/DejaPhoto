@@ -45,7 +45,7 @@ public class PhotoAlbum implements Serializable{
             String filePath = cursor.getString(1);
             double longitude = cursor.getDouble(5);
             double latitude = cursor.getDouble(6);
-            long dateTaken = cursor.getLong(3);
+            Date dateTaken = new Date(cursor.getLong(3) * 1000);
             photos.add(new Photo(filePath, longitude, latitude, dateTaken, false, false, 0));
             //System.out.println("id: " + filePath + " date: " + dateTaken + " long: " + longitude + " lat: " + latitude);
             //System.out.println("filepath from photos: " + photos.get(i).getFilePath());
