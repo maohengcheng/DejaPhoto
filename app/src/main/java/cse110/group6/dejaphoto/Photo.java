@@ -95,7 +95,7 @@ public class Photo implements Serializable{
 
 
 
-    // Recalculates weight for current status (may need fields)
+    // Recalculates weight for current status
     void calcWeight(Location location) {
         Calendar calendar = Calendar.getInstance();
         int currDay = calendar.get(Calendar.DAY_OF_WEEK) - 1; // Date class is 0-indexed, Calendar is 1-indexed
@@ -134,12 +134,11 @@ public class Photo implements Serializable{
 
         //day
         int photoDayOfWeek = dateTaken.getDay();
-        int photoHourOfDay = dateTaken.getHours();
-
-        if(currDay != photoDayOfWeek)
+        if(currDay == photoDayOfWeek)
             weight += 25;
 
         //time
+        int photoHourOfDay = dateTaken.getHours();
         int diffTime = Math.abs(photoHourOfDay - currHour);
         if(diffTime == 0)
             weight += 25;
