@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -294,10 +295,10 @@ public class MainActivity extends AppCompatActivity {
         specified by the image's file location
      */
     @RequiresApi(api = Build.VERSION_CODES.ECLAIR)
-    private synchronized void setImageView(String imageLoc,
-                                           ImageView imageView, File imageFile) {
+    public synchronized boolean setImageView(String imageLoc,
+                                             ImageView imageView, File imageFile) {
         //final Bitmap bitmap =
-          //     decodeSampledBitmap(imageLoc, imageFile, screenWidth, screenHeight);
+        //     decodeSampledBitmap(imageLoc, imageFile, screenWidth, screenHeight);
 
         bitmap = decodeFile(imageLoc);
         /* bJPGcompress adapted from:
@@ -307,9 +308,9 @@ public class MainActivity extends AppCompatActivity {
         //Bitmap bitmap = BitmapFactory.decodeFile(imageLoc);
 
         /*check if image exists, then set imageView and background */
-        if(imageFile.exists() && imageLoc != null) {
+        if (imageFile.exists() && imageLoc != null) {
             imageView.setImageBitmap(bitmap);
-
+            return true;
             /* set the background in a separate thread to improve app runtime
                 speed
                 */
@@ -356,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }*/
         }
-
+        return false;
     }
 
     @Override

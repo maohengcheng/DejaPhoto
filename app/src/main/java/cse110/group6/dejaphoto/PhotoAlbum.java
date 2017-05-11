@@ -22,7 +22,7 @@ public class PhotoAlbum implements Serializable{
 
 
     /* constructor */
-    PhotoAlbum() {
+    public PhotoAlbum() {
         projectImage = new String[] {
                 MediaStore.Images.ImageColumns._ID,
                 MediaStore.Images.ImageColumns.DATA,
