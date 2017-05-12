@@ -16,8 +16,6 @@ public class PhotoAlbum implements Serializable{
     String[] projectImage;
     Cursor cursor;
     int filePathIndex;
-    int weight;
-    String imageLoc;
     Vector<Photo> photos;
 
 
@@ -95,7 +93,5 @@ public class PhotoAlbum implements Serializable{
         cursor.close();
     }
 
-    public Vector<Photo> getPhotos() {
-        return photos;
-    }
+    public Vector<Photo> getPhotos() { return photos; }
 }

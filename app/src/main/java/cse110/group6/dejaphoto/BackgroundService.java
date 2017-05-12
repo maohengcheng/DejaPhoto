@@ -139,8 +139,17 @@ public class BackgroundService extends Service {
     }
 
     void updateBackground() {
-        Photo[] photos = new Photo[photoAlbum.size()];
-        photos = photoAlbum.toArray(photos);
+        ArrayList<Photo> photoAlbumCopy = (ArrayList<Photo>) photoAlbum.clone();
+
+        for(int i = 0; i < photoAlbumCopy.size();) {
+            if(photoAlbumCopy.get(i).isReleased())
+                photoAlbumCopy.remove(i);
+            else
+                i++;
+        }
+
+        Photo[] photos = new Photo[photoAlbumCopy.size()];
+        photos = photoAlbumCopy.toArray(photos);
 
         // Calculate current weight
         for (Photo photo : photos)
