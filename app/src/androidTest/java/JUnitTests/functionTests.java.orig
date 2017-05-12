@@ -1,6 +1,10 @@
 package JUnitTests;
 
 import android.database.Cursor;
+<<<<<<< HEAD
+import android.media.MediaActionSound;
+=======
+>>>>>>> 5c3a4a57f441f173d9f960996131a711fb1628b2
 import android.provider.MediaStore;
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.rule.ActivityTestRule;
@@ -70,6 +74,16 @@ public class functionTests {
         assertEquals(false, check);
     }
 
+<<<<<<< HEAD
+    @Test
+    public void testPhotoAlbum() {
+        Cursor check = (mainActivity.getActivity().getContentResolver().
+                query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        photos.getImages(), null, null,
+                        MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
+
+        assertEquals(photos.getCursor(), check);
+=======
     @UiThreadTest
     @Test
     public void giveKarmaTest(){
@@ -200,5 +214,6 @@ public class functionTests {
 
         photos = tempPhotos;
         photos.getCursor().moveToPosition(tempCursorPos);
+>>>>>>> 5c3a4a57f441f173d9f960996131a711fb1628b2
     }
 }
