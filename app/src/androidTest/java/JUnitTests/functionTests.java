@@ -1,5 +1,7 @@
 package JUnitTests;
 
+import android.database.Cursor;
+import android.media.MediaActionSound;
 import android.provider.MediaStore;
 import android.support.test.annotation.UiThreadTest;
 import android.support.test.rule.ActivityTestRule;
@@ -56,5 +58,15 @@ public class functionTests {
         assertEquals(true, check);
         check = mainActivity.getActivity().setImageView(null, imageView, imageFile);
         assertEquals(false, check);
+    }
+
+    @Test
+    public void testPhotoAlbum() {
+        Cursor check = (mainActivity.getActivity().getContentResolver().
+                query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        photos.getImages(), null, null,
+                        MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
+
+        assertEquals(photos.getCursor(), check);
     }
 }
