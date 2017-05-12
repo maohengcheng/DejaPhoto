@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:background="@null"
         android:src="@mipmap/ic_release"
-        android:onClick="releasePhoto"
+        android:onClick="toggleReleasePhoto"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginRight="24dp" />
