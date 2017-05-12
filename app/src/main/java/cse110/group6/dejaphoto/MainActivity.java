@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -303,15 +303,19 @@ public class MainActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
         // What to do when settings button is pressed (launch activity)
-        if (id == R.id.action_settings) {
-            Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
-            return true;
-        }
+        switch (item.getItemId()) {
 
-        return super.onOptionsItemSelected(item);
+            case R.id.action_settings:
+                Intent startActivity = new Intent(this, Settings.class);
+                startActivity(startActivity);
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /* function called for when the karma button is pressed */
