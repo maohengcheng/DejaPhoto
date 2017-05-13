@@ -30,7 +30,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="-26dp"
         android:layout_marginStart="260dp"
-        >    </Spinner>
+        android:spinnerMode="dialog"
+        android:entries="@array/time_entries"
+        ></Spinner>
 
 
     <TextView

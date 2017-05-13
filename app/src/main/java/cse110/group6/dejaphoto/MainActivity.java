@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     SwipeListener swipeListener;
     Bitmap bitmap;
     File imageFile;
+    public static long backgroundInterval = 10000; //10seconds default
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -136,8 +137,9 @@ public class MainActivity extends AppCompatActivity {
         //-------------------------------------------------------*/
         Intent otherIntent = new Intent(MainActivity.this, BackgroundService.class);
 
+
         otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
-        //otherIntent.putExtra("photoPos", photos.getCursor().getPosition()); // passing in the position of the current photo in the vector of photos
+        otherIntent.putExtra("Interval", backgroundInterval); // passing in the position of the current photo in the vector of photos
 
         //Call the service to run in the background
         startService(otherIntent);
@@ -284,7 +286,12 @@ public class MainActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
+       // super.onActivityResult(requestCode, resultCode, data);
+      //  if(requestCode == 1){
+        //    if(resultCode == RESULT_OK) {
+         //      backgroundInterval = data.getLongExtra("newtime", backgroundInterval);
+         //   }
+       // }
         try {
             if(requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
                     && data != null) {
@@ -325,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_settings:
                 Intent startActivity = new Intent(this, Settings.class);
-                startActivity(startActivity);
+                startActivityForResult(startActivity, 1);
 
                 return true;
 
