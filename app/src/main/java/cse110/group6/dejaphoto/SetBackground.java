@@ -99,6 +99,7 @@ public class SetBackground extends IntentService{
 
                 /* get the images filepath and then set the background */
                 String filePath = intent.getStringExtra("filepath");
+
                 Bitmap bitmap = decodeFile(filePath);
                 File imageFile = new File(filePath);
                 DisplayMetrics displayMetrics = new DisplayMetrics();

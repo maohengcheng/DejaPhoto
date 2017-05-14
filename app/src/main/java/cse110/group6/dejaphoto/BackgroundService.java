@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ public class BackgroundService extends Service {
     private Location lastUpdatedLocation = new Location("default");
     private LocationManager mLocationManager=null;
     private ArrayList<Photo> photoAlbum;
+    private String currFilePath;
 
     private static final long LOCATION_REFRESH_TIME = 1000; // time in milliseconds
     private static final float LOCATION_REFRESH_DISTANCE = 50; // distance in meters
@@ -87,6 +89,31 @@ public class BackgroundService extends Service {
         photoAlbum = (ArrayList<Photo>) intent.getExtras().getSerializable("filepaths");
         //photoPos = intent.getIntExtra("photoPos", 0);
         interval = intent.getLongExtra("Interval",0);
+
+
+        /* get the images filepath and then set the background */
+        String filePath = intent.getStringExtra("filepath");
+        Bitmap bitmap = decodeFile(filePath);
+        File imageFile = new File(filePath);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager)
+                getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+        bitmap = bitmap.createScaledBitmap(bitmap, screenWidth, screenHeight, true);
+
+        if(imageFile.exists() && filePath != null) {
+            WallpaperManager myWallpaperManager
+                    = WallpaperManager.getInstance(getApplicationContext());
+
+            try {
+                myWallpaperManager.setBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         mTimer.scheduleAtFixedRate(new TimeDisplayTimerTask(),0,interval);
 
         return START_STICKY;
@@ -94,8 +121,11 @@ public class BackgroundService extends Service {
 
     @Override
     public void onDestroy(){
-        Toast.makeText(this, "DejaPhoto Closed", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "BackService Closed", Toast.LENGTH_LONG).show();
+        sendMessageToActivity("I'm from BackService");
         mTimer.cancel();
+
+
     }
 
     // source: http://stackoverflow.com/questions/17591147/how-to-get-current-location-in-android
@@ -162,6 +192,8 @@ public class BackgroundService extends Service {
 
     /* get the images filepath and then set the background */
     void setBackground(String filePath) {
+
+        currFilePath = filePath;
         Bitmap bitmap = decodeFile(filePath);
         File imageFile = new File(filePath);
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -178,11 +210,18 @@ public class BackgroundService extends Service {
 
             try {
                 myWallpaperManager.setBitmap(bitmap);
-                Toast.makeText(this, "Backgroudn changed", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Background changed", Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+    private void sendMessageToActivity(String msg) {
+        Intent intent = new Intent("intentKey");
+// You can also include some extra data.
+        intent.putExtra("key", msg);
+        intent.putExtra("currPath", currFilePath);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
 

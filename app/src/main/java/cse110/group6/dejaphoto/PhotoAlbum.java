@@ -96,6 +96,19 @@ public class PhotoAlbum implements Serializable{
             return null;
     }
 
+    public String searchImage(String path){
+
+        for (int i = 0; i < photos.size(); i++)
+        {
+            if (photos.get(i).getFilePath().equals(path))
+                return photos.get(i).getFilePath();
+            else
+                return null;
+        }
+
+        return cursor.getString(filePathIndex);
+    }
+
     public void closeCursor() {
         cursor.close();
     }
