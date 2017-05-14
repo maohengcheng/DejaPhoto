@@ -52,6 +52,7 @@ import static java.lang.Boolean.FALSE;
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE = 20;
     private static int RESULT_LOAD_IMG = 1;
+    private static int RESULT_SETTINGS = 2;
     private ImageView imageView;
     private String imageLoc;
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2012;
@@ -311,25 +312,26 @@ public class MainActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-       // super.onActivityResult(requestCode, resultCode, data);
-      //  if(requestCode == 1){
-        //    if(resultCode == RESULT_OK) {
-         //      backgroundInterval = data.getLongExtra("newtime", backgroundInterval);
-         //   }
-       // }
         try {
             if(requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
                     && data != null) {
 
-                /* get image data with a uri */
+                //* get image data with a uri *//*
                 Uri photoUri = data.getData();
-                /* get actual image from uri */
+                //* get actual image from uri *//*
                 photos.setCursor(getContentResolver().query(photoUri,
                         photos.getImages(), null, null, null));
                 imageLoc = photos.getMostRecentImage();
                 File imageFile = new File(imageLoc);
                 setImageView(imageLoc, imageView, imageFile);
-            } else {
+            }
+               if(requestCode == RESULT_SETTINGS && resultCode == RESULT_OK) {
+                   backgroundInterval = data.getLongExtra("newtime", backgroundInterval);
+                   String backgroundIntervalString = Long.toString((backgroundInterval));
+                   Toast.makeText(this, backgroundIntervalString, Toast.LENGTH_LONG).show();
+               }
+
+                else {
                 Toast.makeText(this, "No image selected",
                         Toast.LENGTH_LONG).show();
             }
@@ -357,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_settings:
                 Intent startActivity = new Intent(this, Settings.class);
-                startActivityForResult(startActivity, 1);
+                startActivityForResult(startActivity, RESULT_SETTINGS);
 
                 return true;
 

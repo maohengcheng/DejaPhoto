@@ -28,6 +28,13 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
         spinnerDialog.setAdapter(adapter);
         spinnerDialog.setOnItemSelectedListener(Settings.this);
 
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        TextView spinnerDialogText = (TextView) view;
+        Toast.makeText(this, "Background changes every " + spinnerDialogText.getText(), Toast.LENGTH_SHORT).show();
+
         String size = spinnerDialog.getSelectedItem().toString();
         int spinner_pos = spinnerDialog.getSelectedItemPosition();
         String[] size_values = getResources().getStringArray(R.array.time_values);
@@ -36,13 +43,6 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
         Intent timeChange = new Intent();
         timeChange.putExtra("newtime", actual_size);
         setResult(RESULT_OK, timeChange);
-        //finish();
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        TextView spinnerDialogText = (TextView) view;
-        Toast.makeText(this, "Background changes every " + spinnerDialogText.getText(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

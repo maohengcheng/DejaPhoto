@@ -178,6 +178,7 @@ public class BackgroundService extends Service {
 
             try {
                 myWallpaperManager.setBitmap(bitmap);
+                Toast.makeText(this, "Backgroudn changed", Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }
