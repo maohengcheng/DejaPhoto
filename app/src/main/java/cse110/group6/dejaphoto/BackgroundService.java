@@ -42,7 +42,7 @@ public class BackgroundService extends Service {
     private LocationManager mLocationManager=null;
     private ArrayList<Photo> photoAlbum;
     private String currFilePath;
-
+    boolean firstRun = true;
     private static final long LOCATION_REFRESH_TIME = 1000; // time in milliseconds
     private static final float LOCATION_REFRESH_DISTANCE = 50; // distance in meters
     private static final float BACKGROUND_UPDATE_DISTANCE = 250;
@@ -113,6 +113,18 @@ public class BackgroundService extends Service {
                 e.printStackTrace();
             }
         }
+
+        if(firstRun == true) {
+            synchronized (this) {
+                try {
+                    wait(interval);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            firstRun = false;
+        }
+
 
         mTimer.scheduleAtFixedRate(new TimeDisplayTimerTask(),0,interval);
 

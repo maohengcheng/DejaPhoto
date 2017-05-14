@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     SwipeListener swipeListener;
     Bitmap bitmap;
     File imageFile;
-    public static long backgroundInterval = 30000; //10seconds default
+    public static long backgroundInterval = 10000; //10seconds default
     Intent otherIntent;
 
     @TargetApi(Build.VERSION_CODES.M)
