@@ -12,8 +12,10 @@ package cse110.group6.dejaphoto;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -24,6 +26,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -65,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     SwipeListener swipeListener;
     Bitmap bitmap;
     File imageFile;
-    public static long backgroundInterval = 10000; //10seconds default
+    public static long backgroundInterval = 30000; //10seconds default
     Intent otherIntent;
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -167,6 +170,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }.start();
 
+        /*Local Receiver for managing data from services */
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mMessageReceiver, new IntentFilter("intentKey"));
+
     }
     /* end of onCreate */
 
@@ -208,10 +215,11 @@ public class MainActivity extends AppCompatActivity {
         photoPos = photos.getCursor().getPosition();
         imageLoc = photos.getImage(photoPos);
 
-        Intent intent = new Intent(MainActivity.this, SetBackground.class);
-        intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
+     //   Intent intent = new Intent(MainActivity.this, SetBackground.class);
+      //  intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
 
-        startService(intent);
+
+      //  startService(intent);
 
         /*--------------------------------------------------------
         //BackgroundService Call
@@ -220,8 +228,9 @@ public class MainActivity extends AppCompatActivity {
         //-------------------------------------------------------*/
 
         otherIntent = new Intent(MainActivity.this, BackgroundService.class);
+        otherIntent.putExtra("filepath", imageLoc); //passing in just a string of image filepath
         otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
-        otherIntent.putExtra("Interval", backgroundInterval); // passing in the position of the current photo in the vector of photos
+        otherIntent.putExtra("Interval", backgroundInterval); // passing in the time interval
         //Call the service to run in the background
         startService(otherIntent);
 
@@ -367,6 +376,16 @@ public class MainActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            String message = intent.getStringExtra("key");
+            String imagePath = intent.getStringExtra("currPath");
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        }
+    };
 
     /* function called for when the karma button is pressed */
     public void giveKarma(View view) {
