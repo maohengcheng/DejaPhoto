@@ -66,6 +66,13 @@ public class PhotoAlbum implements Serializable{
         return cursor;
     }
 
+    public String getImage(int index) {
+        if(cursor.moveToPosition(index)) {
+            return cursor.getString(filePathIndex);
+        } else
+            return null;
+    }
+
     /* functions that will get some image's filepath */
     public String getMostRecentImage () {
         if(cursor.moveToFirst()) {

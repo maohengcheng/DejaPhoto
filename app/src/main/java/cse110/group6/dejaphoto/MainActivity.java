@@ -59,11 +59,13 @@ public class MainActivity extends AppCompatActivity {
     int MY_PERMISSION_ACCESS_FINE_LOCATION = 5048;
     int screenWidth;
     int screenHeight;
+    int photoPos;
     PhotoAlbum photos;
     SwipeListener swipeListener;
     Bitmap bitmap;
     File imageFile;
     public static long backgroundInterval = 10000; //10seconds default
+    Intent otherIntent;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -114,21 +116,6 @@ public class MainActivity extends AppCompatActivity {
         /* instantiate the PhotoAlbum object, then initialize it first with the
             most recent image in the gallery */
         photos = new PhotoAlbum();
-        photos.setCursor(getContentResolver().
-                query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                photos.getImages(), null, null,
-                MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
-        imageLoc = photos.getMostRecentImage();
-        if(imageLoc != null) {
-            imageFile = new File(imageLoc);
-            setImageView(imageLoc, imageView, imageFile);
-            photos.initializePhotos();
-            int photoPos = photos.getCursor().getPosition();
-            Photo currPhoto = photos.getPhotos().get(photoPos);
-            updateLocationDisplay(currPhoto);
-        } else {
-            Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
-        }
 
         /* swipe left and right code adapted from:
             http://stackoverflow.com/questions/4139288/android-how-to-handle-right-to-left-swipe-gestures */
@@ -141,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSwipeRight() {
                 imageLoc = photos.getPrevImage();
                 if(imageLoc != null) {
-                    int photoPos = photos.getCursor().getPosition();
+                    photoPos = photos.getCursor().getPosition();
                     Photo currPhoto = photos.getPhotos().get(photoPos);
                     imageFile = new File(imageLoc);
 
@@ -159,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSwipeLeft() {
                 imageLoc = photos.getNextImage();
                 if(imageLoc != null) {
-                    int photoPos = photos.getCursor().getPosition();
+                    photoPos = photos.getCursor().getPosition();
                     Photo currPhoto = photos.getPhotos().get(photoPos);
                     imageFile = new File(imageLoc);
 
@@ -182,12 +169,44 @@ public class MainActivity extends AppCompatActivity {
     }
     /* end of onCreate */
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        photos.setCursor(getContentResolver().
+                query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        photos.getImages(), null, null,
+                        MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
+        imageLoc = photos.getMostRecentImage();
+        if(imageLoc != null) {
+            imageFile = new File(imageLoc);
+            setImageView(imageLoc, imageView, imageFile);
+            photos.initializePhotos();
+            photoPos = photos.getCursor().getPosition();
+            Photo currPhoto = photos.getPhotos().get(photoPos);
+            updateLocationDisplay(currPhoto);
+        } else {
+            Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        stopService(otherIntent);
+    }
+
     /* the app, upon losing focus and not being on phone's foreground anymore,
         will set the phone's wallpaper to the last viewed image
      */
     @Override
     protected void onStop(){
         super.onStop();
+
+        photoPos = photos.getCursor().getPosition();
+        imageLoc = photos.getImage(photoPos);
+
         Intent intent = new Intent(MainActivity.this, SetBackground.class);
         intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
 
@@ -198,14 +217,18 @@ public class MainActivity extends AppCompatActivity {
         //-Creates an intent called otherIntent
         //-we use putExtra to passed in variables to the service
         //-------------------------------------------------------*/
-        Intent otherIntent = new Intent(MainActivity.this, BackgroundService.class);
 
-
+        otherIntent = new Intent(MainActivity.this, BackgroundService.class);
         otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
         otherIntent.putExtra("Interval", backgroundInterval); // passing in the position of the current photo in the vector of photos
-
         //Call the service to run in the background
         startService(otherIntent);
+
+
+
+
+
+
     }
 
     /* sets the apps imageView and the phones background to some image
@@ -347,7 +370,7 @@ public class MainActivity extends AppCompatActivity {
         button.setImageResource(R.mipmap.ic_karma);
 
         //get current images position in photoalbum
-        int photoPos = photos.getCursor().getPosition();
+        photoPos = photos.getCursor().getPosition();
         Photo karmaPhoto = photos.getPhotos().get(photoPos);
         // set current photo's karma to true
         karmaPhoto.setKarma(true);
@@ -359,7 +382,7 @@ public class MainActivity extends AppCompatActivity {
     /* function called for when the release button is pressed */
     public void toggleReleasePhoto(View view) {
         ImageButton button = (ImageButton) findViewById(R.id.releaseButton);
-        int photoPos = photos.getCursor().getPosition();
+        photoPos = photos.getCursor().getPosition();
         Photo releasePhoto = photos.getPhotos().get(photoPos);
 
         // check if photo was released or not, then act accordingly by setting
