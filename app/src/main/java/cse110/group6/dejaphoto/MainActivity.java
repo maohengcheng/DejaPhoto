@@ -224,11 +224,13 @@ public class MainActivity extends AppCompatActivity {
         //Call the service to run in the background
         startService(otherIntent);
 
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-
-
-
+        stopService(otherIntent);
     }
 
     /* sets the apps imageView and the phones background to some image
@@ -442,6 +444,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
 
     public PhotoAlbum getPhotos() {
         return photos;
