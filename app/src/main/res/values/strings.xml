@@ -3,6 +3,12 @@
     <string name="action_settings">Settings</string>
     <string name="location">Unknown Location</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="time_spinner_text">Time Until Next Photo:</string>
+    <string name="location_switch">Use Location:</string>
+    <string name="dow_switch">Use Day of Week:</string>
+    <string name="tod_switch">Use Time of Day:</string>
+    <string name="recent_switch">Use Recent Photos:</string>
+    <string name="karma_switch">Use Karma:</string>
 
     <string-array name="time_entries">
         <item name="10 seconds">10 seconds</item>
