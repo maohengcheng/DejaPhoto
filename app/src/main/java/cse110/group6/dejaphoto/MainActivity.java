@@ -201,10 +201,10 @@ public class MainActivity extends AppCompatActivity {
     /* the app, upon losing focus and not being on phone's foreground anymore,
         will set the phone's wallpaper to the last viewed image
      */
-    @Override
-    protected void onStop(){
-        super.onStop();
 
+    @Override
+    protected void onPause() {
+        super.onPause();
         photoPos = photos.getCursor().getPosition();
         imageLoc = photos.getImage(photoPos);
 
@@ -212,6 +212,12 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
 
         startService(intent);
+    }
+    @Override
+    protected void onStop(){
+        super.onStop();
+
+
 
         /*--------------------------------------------------------
         //BackgroundService Call
