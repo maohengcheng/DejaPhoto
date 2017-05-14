@@ -17,6 +17,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,6 +38,9 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 import static android.graphics.BitmapFactory.decodeFile;
 import static cse110.group6.dejaphoto.R.mipmap.ic_karma;
@@ -58,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     SwipeListener swipeListener;
     Bitmap bitmap;
     File imageFile;
+    public static long backgroundInterval = 10000; //10seconds default
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -120,6 +126,9 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
         }
         photos.initializePhotos();
+        int photoPos = photos.getCursor().getPosition();
+        Photo currPhoto = photos.getPhotos().get(photoPos);
+        updateLocationDisplay(currPhoto);
 
         /*--------------------------------------------------------
         //BackgroundService Call
@@ -128,8 +137,9 @@ public class MainActivity extends AppCompatActivity {
         //-------------------------------------------------------*/
         Intent otherIntent = new Intent(MainActivity.this, BackgroundService.class);
 
+
         otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
-        //otherIntent.putExtra("photoPos", photos.getCursor().getPosition()); // passing in the position of the current photo in the vector of photos
+        otherIntent.putExtra("Interval", backgroundInterval); // passing in the position of the current photo in the vector of photos
 
         //Call the service to run in the background
         startService(otherIntent);
@@ -145,9 +155,13 @@ public class MainActivity extends AppCompatActivity {
             public void onSwipeRight() {
                 imageLoc = photos.getPrevImage();
                 if(imageLoc != null) {
+                    int photoPos = photos.getCursor().getPosition();
+                    Photo currPhoto = photos.getPhotos().get(photoPos);
                     imageFile = new File(imageLoc);
+
                     setImageView(imageLoc, imageView, imageFile);
-                    setButtons(imageView);
+                    setButtons(currPhoto);
+                    updateLocationDisplay(currPhoto);
                 } else {
                     Toast.makeText(MainActivity.this, "No previous image",
                             Toast.LENGTH_SHORT).show();
@@ -159,9 +173,13 @@ public class MainActivity extends AppCompatActivity {
             public void onSwipeLeft() {
                 imageLoc = photos.getNextImage();
                 if(imageLoc != null) {
+                    int photoPos = photos.getCursor().getPosition();
+                    Photo currPhoto = photos.getPhotos().get(photoPos);
                     imageFile = new File(imageLoc);
+
                     setImageView(imageLoc, imageView, imageFile);
-                    setButtons(imageView);
+                    setButtons(currPhoto);
+                    updateLocationDisplay(currPhoto);
                 } else {
                     Toast.makeText(MainActivity.this, "No next image",
                             Toast.LENGTH_SHORT).show();
@@ -268,7 +286,12 @@ public class MainActivity extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //super.onActivityResult(requestCode, resultCode, data);
+       // super.onActivityResult(requestCode, resultCode, data);
+      //  if(requestCode == 1){
+        //    if(resultCode == RESULT_OK) {
+         //      backgroundInterval = data.getLongExtra("newtime", backgroundInterval);
+         //   }
+       // }
         try {
             if(requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
                     && data != null) {
@@ -309,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_settings:
                 Intent startActivity = new Intent(this, Settings.class);
-                startActivity(startActivity);
+                startActivityForResult(startActivity, 1);
 
                 return true;
 
@@ -356,14 +379,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /* function to update the karma and release buttons to the correct icon */
-    public void setButtons(View view){
+    public void setButtons(Photo photo){
         ImageButton karmaButton = (ImageButton) findViewById(R.id.karmaButton);
         ImageButton releaseButton = (ImageButton) findViewById(R.id.releaseButton);
-        int photoPos = photos.getCursor().getPosition();
-        Photo currPhoto = photos.getPhotos().get(photoPos);
 
         /* set the karma buttona for this picture to the correct icon */
-        if (currPhoto.isKarma()){
+        if (photo.isKarma()){
             karmaButton.setImageResource(R.mipmap.ic_karma);
             karmaButton.setTag(ic_karma);
         }
@@ -373,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /* set the release button for this picture to the correct icon */
-        if(currPhoto.isReleased()){
+        if(photo.isReleased()){
             releaseButton.setImageResource(ic_undo);
             releaseButton.setTag(ic_undo);
         }
@@ -382,6 +403,23 @@ public class MainActivity extends AppCompatActivity {
             releaseButton.setTag(ic_release);
         }
     }
+
+    public void updateLocationDisplay(Photo photo) {
+        TextView locationDisplay = (TextView) findViewById(R.id.locationDisplay);
+
+        // source: http://stackoverflow.com/questions/6922312/get-location-name-from-fetched-coordinates
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> listAddresses = geocoder.getFromLocation(photo.getLatitude(), photo.getLongitude(), 1);
+            if(null != listAddresses && listAddresses.size() > 0)
+                locationDisplay.setText(listAddresses.get(0).getAddressLine(0));
+            else
+                locationDisplay.setText("Unknown Location");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public PhotoAlbum getPhotos() {
         return photos;
     }

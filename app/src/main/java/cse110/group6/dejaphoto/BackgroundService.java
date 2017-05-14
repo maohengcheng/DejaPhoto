@@ -33,7 +33,7 @@ import static android.graphics.BitmapFactory.decodeFile;
 
 public class BackgroundService extends Service {
 
-    public static final long INTERVAL = 25000; //25seconds
+    public static long interval = 0;
     private Handler mHandler = new Handler();
     private Timer mTimer=null;
     private Location currLocation = new Location("default"); // initializes location at (0, 0)
@@ -86,8 +86,8 @@ public class BackgroundService extends Service {
         //use getExtra to get the values we passed with intent from mainActivity
         photoAlbum = (ArrayList<Photo>) intent.getExtras().getSerializable("filepaths");
         //photoPos = intent.getIntExtra("photoPos", 0);
-
-        mTimer.scheduleAtFixedRate(new TimeDisplayTimerTask(),0,INTERVAL);
+        interval = intent.getLongExtra("Interval",0);
+        mTimer.scheduleAtFixedRate(new TimeDisplayTimerTask(),0,interval);
 
         return START_STICKY;
     }
@@ -139,8 +139,17 @@ public class BackgroundService extends Service {
     }
 
     void updateBackground() {
-        Photo[] photos = new Photo[photoAlbum.size()];
-        photos = photoAlbum.toArray(photos);
+        ArrayList<Photo> photoAlbumCopy = (ArrayList<Photo>) photoAlbum.clone();
+
+        for(int i = 0; i < photoAlbumCopy.size();) {
+            if(photoAlbumCopy.get(i).isReleased())
+                photoAlbumCopy.remove(i);
+            else
+                i++;
+        }
+
+        Photo[] photos = new Photo[photoAlbumCopy.size()];
+        photos = photoAlbumCopy.toArray(photos);
 
         // Calculate current weight
         for (Photo photo : photos)

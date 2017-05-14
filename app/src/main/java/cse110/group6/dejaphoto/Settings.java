@@ -1,6 +1,7 @@
 package cse110.group6.dejaphoto;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,13 +22,21 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-
-        adapter = ArrayAdapter.createFromResource(this, R.array.spinner_options, android.R.layout.simple_spinner_item);
+        adapter = ArrayAdapter.createFromResource(this, R.array.time_entries, android.R.layout.simple_spinner_item);
 
         spinnerDialog = (Spinner) findViewById(R.id.spinner_dialog);
         spinnerDialog.setAdapter(adapter);
         spinnerDialog.setOnItemSelectedListener(Settings.this);
 
+        String size = spinnerDialog.getSelectedItem().toString();
+        int spinner_pos = spinnerDialog.getSelectedItemPosition();
+        String[] size_values = getResources().getStringArray(R.array.time_values);
+        long actual_size = Long.valueOf(size_values[spinner_pos]);
+
+        Intent timeChange = new Intent();
+        timeChange.putExtra("newtime", actual_size);
+        setResult(RESULT_OK, timeChange);
+        //finish();
     }
 
     @Override

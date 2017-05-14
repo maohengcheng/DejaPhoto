@@ -1,15 +1,11 @@
 package cse110.group6.dejaphoto;
 
-import android.annotation.TargetApi;
-import android.database.Cursor;
+
 import android.location.Location;
-import android.os.Build;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Michael on 5/6/2017.
