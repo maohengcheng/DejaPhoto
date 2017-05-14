@@ -122,27 +122,13 @@ public class MainActivity extends AppCompatActivity {
         if(imageLoc != null) {
             imageFile = new File(imageLoc);
             setImageView(imageLoc, imageView, imageFile);
+            photos.initializePhotos();
+            int photoPos = photos.getCursor().getPosition();
+            Photo currPhoto = photos.getPhotos().get(photoPos);
+            updateLocationDisplay(currPhoto);
         } else {
             Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
         }
-        photos.initializePhotos();
-        int photoPos = photos.getCursor().getPosition();
-        Photo currPhoto = photos.getPhotos().get(photoPos);
-        updateLocationDisplay(currPhoto);
-
-        /*--------------------------------------------------------
-        //BackgroundService Call
-        //-Creates an intent called otherIntent
-        //-we use putExtra to passed in variables to the service
-        //-------------------------------------------------------*/
-        Intent otherIntent = new Intent(MainActivity.this, BackgroundService.class);
-
-
-        otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
-        otherIntent.putExtra("Interval", backgroundInterval); // passing in the position of the current photo in the vector of photos
-
-        //Call the service to run in the background
-        startService(otherIntent);
 
         /* swipe left and right code adapted from:
             http://stackoverflow.com/questions/4139288/android-how-to-handle-right-to-left-swipe-gestures */
@@ -206,6 +192,20 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
 
         startService(intent);
+
+        /*--------------------------------------------------------
+        //BackgroundService Call
+        //-Creates an intent called otherIntent
+        //-we use putExtra to passed in variables to the service
+        //-------------------------------------------------------*/
+        Intent otherIntent = new Intent(MainActivity.this, BackgroundService.class);
+
+
+        otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
+        otherIntent.putExtra("Interval", backgroundInterval); // passing in the position of the current photo in the vector of photos
+
+        //Call the service to run in the background
+        startService(otherIntent);
     }
 
     /* sets the apps imageView and the phones background to some image

@@ -133,9 +133,15 @@ public class functionTests {
         /* photo is initially not karmad and not released.
             buttons should initially be karma_gray and release icons.
         */
+        PhotoAlbum tempPhotos = photos;
+        photos = mainActivity.getActivity().getPhotos();
+        int photoPos = photos.getCursor().getPosition();
+
+        /* test that karma is initially false for a photo */
+        Photo karmaPhoto = photos.getPhotos().get(photoPos);
         karmaButton.setTag(ic_karma_gray);
         releaseButton.setTag(ic_release);
-        mainActivity.getActivity().setButtons(imageView);
+        mainActivity.getActivity().setButtons(karmaPhoto);
         assertEquals(ic_karma_gray, (int)karmaButton.getTag());
         assertEquals(ic_release, (int)releaseButton.getTag());
 
@@ -144,7 +150,7 @@ public class functionTests {
          */
         karmaButton.performClick();
         releaseButton.performClick();
-        mainActivity.getActivity().setButtons(imageView);
+        mainActivity.getActivity().setButtons(karmaPhoto);
         assertEquals(ic_karma, (int)karmaButton.getTag());
         assertEquals(ic_undo, (int)releaseButton.getTag());
 
@@ -153,7 +159,7 @@ public class functionTests {
          */
         karmaButton.performClick();
         releaseButton.performClick();
-        mainActivity.getActivity().setButtons(imageView);
+        mainActivity.getActivity().setButtons(karmaPhoto);
         assertEquals(ic_karma, (int)karmaButton.getTag());
         assertEquals(ic_release, (int)releaseButton.getTag());
     }
