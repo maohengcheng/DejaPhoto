@@ -133,7 +133,6 @@ public class BackgroundService extends Service {
 
     @Override
     public void onDestroy(){
-        Toast.makeText(this, "BackService Closed", Toast.LENGTH_LONG).show();
         sendMessageToActivity("I'm from BackService");
         mTimer.cancel();
 
@@ -222,7 +221,6 @@ public class BackgroundService extends Service {
 
             try {
                 myWallpaperManager.setBitmap(bitmap);
-                Toast.makeText(this, "Background changed", Toast.LENGTH_LONG).show();
             } catch (IOException e) {
                 e.printStackTrace();
             }

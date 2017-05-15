@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
     }
     /* end of onCreate */
 
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onStart() {
         super.onStart();
@@ -215,11 +216,9 @@ public class MainActivity extends AppCompatActivity {
         photoPos = photos.getCursor().getPosition();
         imageLoc = photos.getImage(photoPos);
 
-     //   Intent intent = new Intent(MainActivity.this, SetBackground.class);
-      //  intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
-
-
-      //  startService(intent);
+        //   Intent intent = new Intent(MainActivity.this, SetBackground.class);
+        //  intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
+        //  startService(intent);
 
         /*--------------------------------------------------------
         //BackgroundService Call
@@ -385,7 +384,6 @@ public class MainActivity extends AppCompatActivity {
             String imagePath = intent.getStringExtra("currPath");
             File imageFile = new File(imagePath);
             setImageView(imagePath, imageView, imageFile);
-            //Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         }
     };
 

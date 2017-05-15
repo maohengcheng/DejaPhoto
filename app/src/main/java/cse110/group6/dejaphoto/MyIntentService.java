@@ -1,8 +1,10 @@
 package cse110.group6.dejaphoto;
 
+import android.annotation.TargetApi;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.widget.Toast;
 
@@ -17,6 +19,7 @@ import java.util.concurrent.RunnableFuture;
  * TODO: Customize class - update intent actionsgit, extra parameters and static
  * helper methods.
  */
+@TargetApi(Build.VERSION_CODES.M)
 public class MyIntentService extends IntentService {
     //from stackoverflow.com/questions/15754195/android-toast-message-every-1-minute
     public static final long INTERVAL = 15000;
@@ -32,6 +35,7 @@ public class MyIntentService extends IntentService {
     private static final String EXTRA_PARAM1 = "cse110.group6.dejaphoto.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "cse110.group6.dejaphoto.extra.PARAM2";
 
+    @TargetApi(Build.VERSION_CODES.M)
     public MyIntentService() {
         super("MyIntentService");
     }
@@ -54,21 +58,17 @@ public class MyIntentService extends IntentService {
     /**
      * onStartCommand
      *
-     *
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(MyIntentService.this, "Service Started", Toast.LENGTH_SHORT).show();
         return super.onStartCommand(intent, flags, startId);
     }
     /**
      * onDestroy
      *
-     *
      */
     @Override
     public void onDestroy(){
-        Toast.makeText(MyIntentService.this, "Service Stopped", Toast.LENGTH_SHORT).show();
         mTimer.cancel();
         super.onDestroy();
     }
@@ -123,8 +123,6 @@ public class MyIntentService extends IntentService {
             mHandler.post(new Runnable() {
                 @Override
                 public void run(){
-                    //display toast
-                    Toast.makeText(getApplicationContext(), "Message here?", Toast.LENGTH_SHORT).show();
                 }
             });
         }
