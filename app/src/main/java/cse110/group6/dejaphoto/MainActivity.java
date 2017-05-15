@@ -383,7 +383,9 @@ public class MainActivity extends AppCompatActivity {
             // Get extra data included in the Intent
             String message = intent.getStringExtra("key");
             String imagePath = intent.getStringExtra("currPath");
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+            File imageFile = new File(imagePath);
+            setImageView(imagePath, imageView, imageFile);
+            //Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         }
     };
 
