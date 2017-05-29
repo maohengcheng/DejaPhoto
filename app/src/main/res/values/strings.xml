@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">DejaPhoto</string>
     <string name="action_settings">Settings</string>
+    <string name="action_friends_list">Friends List</string>
     <string name="location">Unknown Location</string>
     <string name="title_activity_settings">Settings</string>
     <string name="time_spinner_text">Time Until Next Photo:</string>

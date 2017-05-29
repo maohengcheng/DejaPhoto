@@ -22,41 +22,61 @@
         app:layout_constraintHorizontal_bias="1.0" />
 
     <ImageButton
-        android:id="@+id/releaseButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        android:src="@mipmap/ic_release"
-        android:onClick="toggleReleasePhoto"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:layout_marginRight="24dp" />
-
-    <ImageButton
         android:id="@+id/karmaButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@null"
         android:src="@mipmap/ic_karma_gray"
         android:onClick="giveKarma"
-        android:layout_marginRight="24dp"
+        android:layout_marginRight="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/releaseButton" />
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <ImageButton
+        android:id="@+id/shareButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:src="@mipmap/ic_sharing"
+        android:onClick="toggleSharePhoto"
+        android:layout_marginRight="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/karmaButton"/>
+
+    <ImageButton
+        android:id="@+id/releaseButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:src="@mipmap/ic_release"
+        android:onClick="toggleReleasePhoto"
+        android:layout_marginRight="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/shareButton"/>
 
     <TextView
         android:id="@+id/locationDisplay"
         android:layout_width="0dp"
         android:layout_height="25dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
         android:background="@drawable/location_border"
         android:gravity="center"
         android:text="@string/location"
         android:textColor="#000000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/karmaButton" />
+        app:layout_constraintRight_toLeftOf="@id/releaseButton" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_camera_swipe"
+        android:alpha="0.4"
+        app:layout_constraintBottom_toTopOf="@id/releaseButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
 
     <!-- Commented out for UI purposes

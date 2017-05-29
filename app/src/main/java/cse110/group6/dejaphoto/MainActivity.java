@@ -321,7 +321,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
-            if(requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
+            /*if(requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
                     && data != null) {
 
                 //* get image data with a uri *//*
@@ -332,17 +332,15 @@ public class MainActivity extends AppCompatActivity {
                 imageLoc = photos.getMostRecentImage();
                 File imageFile = new File(imageLoc);
                 setImageView(imageLoc, imageView, imageFile);
+            }*/
+            if(requestCode == RESULT_SETTINGS && resultCode == RESULT_OK) {
+                backgroundInterval = data.getLongExtra("newtime", backgroundInterval);
+                String backgroundIntervalString = Long.toString((backgroundInterval));
+                Toast.makeText(this, backgroundIntervalString, Toast.LENGTH_LONG).show();
             }
-               if(requestCode == RESULT_SETTINGS && resultCode == RESULT_OK) {
-                   backgroundInterval = data.getLongExtra("newtime", backgroundInterval);
-                   String backgroundIntervalString = Long.toString((backgroundInterval));
-                   Toast.makeText(this, backgroundIntervalString, Toast.LENGTH_LONG).show();
-               }
-
-                else {
-                Toast.makeText(this, "No image selected",
-                        Toast.LENGTH_LONG).show();
-            }
+            /*else {
+                Toast.makeText(this, "No image selected", Toast.LENGTH_LONG).show();
+            }*/
         } catch (Exception e) {
             Toast.makeText(this, "error", Toast.LENGTH_LONG).show();
             e.printStackTrace();
@@ -362,12 +360,17 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
-        // What to do when settings button is pressed (launch activity)
+        // What to do when toolbar buttons are pressed (launch activity)
         switch (item.getItemId()) {
 
             case R.id.action_settings:
                 Intent startActivity = new Intent(this, Settings.class);
                 startActivityForResult(startActivity, RESULT_SETTINGS);
+
+                return true;
+
+            case R.id.action_friends_list:
+                Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
 
                 return true;
 
@@ -422,6 +425,12 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, releasePhoto.getFilePath() + "PhotoAlbum " +
                     "is released", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /* function called when the share button is pressed */
+    public void toggleSharePhoto(View view) {
+        ImageButton button = (ImageButton) findViewById(R.id.shareButton);
+        button.setImageResource(R.mipmap.ic_notsharing);
     }
 
     /* function to update the karma and release buttons to the correct icon */

@@ -4,8 +4,14 @@
     tools:context="cse110.group6.dejaphoto.MainActivity">
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="0"
+        android:orderInCategory="1"
         android:icon="@drawable/ic_settings"
         android:title="@string/action_settings"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_friends_list"
+        android:orderInCategory="0"
+        android:icon="@drawable/ic_friends_list"
+        android:title="@string/action_friends_list"
         app:showAsAction="always" />
 </menu>
