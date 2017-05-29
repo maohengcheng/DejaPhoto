@@ -10,6 +10,11 @@
     <string name="tod_switch">Use Time of Day:</string>
     <string name="recent_switch">Use Recent Photos:</string>
     <string name="karma_switch">Use Karma:</string>
+    <string name="cycle_options">Cycle Options:</string>
+    <string name="choose_photos">Choose Photos</string>
+    <string name="own_photos_switch">View Your Photos:</string>
+    <string name="friends_photos_switch">View Friends Photos:</string>
+    <string name="share_photos_switch">Share Photos:</string>
 
     <string-array name="time_entries">
         <item name="10 seconds">10 seconds</item>

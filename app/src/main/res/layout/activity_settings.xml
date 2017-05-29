@@ -7,6 +7,66 @@
     android:orientation="vertical"
     tools:context="cse110.group6.dejaphoto.Settings">
 
+    <Button
+        android:id="@+id/choosePhotosButton"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_photos"
+        android:textSize="20sp"
+        android:textAllCaps="false"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="5dp"/>
+
+    <Switch
+        android:id="@+id/ownPhotosSwitch"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:text="@string/own_photos_switch"
+        android:textSize="20sp"
+        android:checked="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/choosePhotosButton"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp" />
+
+    <Switch
+        android:id="@+id/friendsPhotosSwitch"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:text="@string/friends_photos_switch"
+        android:textSize="20sp"
+        android:checked="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ownPhotosSwitch"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="10dp" />
+
+    <Switch
+        android:id="@+id/sharePhotosSwitch"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:text="@string/share_photos_switch"
+        android:textSize="20sp"
+        android:checked="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/friendsPhotosSwitch"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="10dp" />
+
+    <TextView
+        android:id="@+id/cycleOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/cycle_options"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        app:layout_constraintTop_toBottomOf="@id/sharePhotosSwitch"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="10dp"/>
+
     <TextView
         android:id="@+id/spinnerTitle"
         android:layout_width="wrap_content"
@@ -14,11 +74,10 @@
         android:text="@string/time_spinner_text"
         android:textSize="20sp"
         android:textColor="#000000"
+        app:layout_constraintTop_toBottomOf="@id/cycleOptions"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        />
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="40dp" />
 
     <Spinner
         android:id="@+id/spinner_dialog"
@@ -27,9 +86,9 @@
         android:textSize="20sp"
         android:spinnerMode="dialog"
         android:entries="@array/time_entries"
+        app:layout_constraintTop_toBottomOf="@id/cycleOptions"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         ></Spinner>
 
     <Switch
@@ -38,10 +97,11 @@
         android:layout_height="wrap_content"
         android:text="@string/location_switch"
         android:textSize="20sp"
+        android:checked="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinnerTitle"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="20dp" />
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="40dp" />
 
     <Switch
         android:id="@+id/dowSwitch"
@@ -49,10 +109,11 @@
         android:layout_height="wrap_content"
         android:text="@string/dow_switch"
         android:textSize="20sp"
+        android:checked="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/locationSwitch"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="20dp" />
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="40dp" />
 
     <Switch
         android:id="@+id/todSwitch"
@@ -60,10 +121,11 @@
         android:layout_height="wrap_content"
         android:text="@string/tod_switch"
         android:textSize="20sp"
+        android:checked="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dowSwitch"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="20dp" />
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="40dp" />
 
     <Switch
         android:id="@+id/recentSwitch"
@@ -71,10 +133,11 @@
         android:layout_height="wrap_content"
         android:text="@string/recent_switch"
         android:textSize="20sp"
+        android:checked="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/todSwitch"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="20dp" />
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="40dp" />
 
     <Switch
         android:id="@+id/karmaSwitch"
@@ -82,84 +145,10 @@
         android:layout_height="wrap_content"
         android:text="@string/karma_switch"
         android:textSize="20sp"
+        android:checked="true"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/recentSwitch"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="20dp" />
-
-    <!--<TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="LOCATION:"
-        android:textSize="25sp"
-        android:layout_marginTop="60dp"
-        />
-
-
-    <ImageButton
-        android:id="@+id/locationToggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick=""
-        app:srcCompat="@android:drawable/checkbox_on_background"
-        android:layout_marginTop="-38dp"
-        android:layout_marginStart="300dp"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="DAY OF THE WEEK:"
-        android:textSize="25sp"
-        android:layout_marginTop="60dp"
-        />
-
-    <ImageButton
-        android:id="@+id/dowToggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick=""
-        app:srcCompat="@android:drawable/checkbox_on_background"
-        android:layout_marginTop="-35dp"
-        android:layout_marginStart="300dp"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TIME OF DAY:"
-        android:textSize="25sp"
-        android:layout_marginTop="50dp"
-        />
-
-    <ImageButton
-        android:id="@+id/towToggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick=""
-        app:srcCompat="@android:drawable/checkbox_on_background"
-        android:layout_marginTop="-35dp"
-        android:layout_marginStart="300dp"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="KARMA:"
-        android:textSize="25sp"
-        android:layout_marginTop="50dp"
-        />
-
-    <ImageButton
-        android:id="@+id/karmaToggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick=""
-        app:srcCompat="@android:drawable/checkbox_on_background"
-        android:layout_marginTop="-40dp"
-        android:layout_marginStart="300dp"
-        />-->
-
-
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="40dp" />
 
 </android.support.constraint.ConstraintLayout>
