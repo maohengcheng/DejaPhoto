@@ -12,7 +12,11 @@
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
+<<<<<<< HEAD
         android:onClick="choosePhotos_btn"
+=======
+        android:onClick="photoPicker"
+>>>>>>> 56b9950f9427fe7cd1a7a07512389376d5008de4
         android:text="@string/choose_photos"
         android:textAllCaps="false"
         android:textSize="20sp"

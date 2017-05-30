@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.graphics.BitmapFactory.decodeFile;
 import static cse110.group6.dejaphoto.R.mipmap.ic_karma;
 import static cse110.group6.dejaphoto.R.mipmap.ic_karma_gray;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 2012;
     int MY_PERMISSION_ACCESS_COURSE_LOCATION = 5042;
     int MY_PERMISSION_ACCESS_FINE_LOCATION = 5048;
+    int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 421;
     int screenWidth;
     int screenHeight;
     int photoPos;
@@ -113,6 +115,13 @@ public class MainActivity extends AppCompatActivity {
         if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
             requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSION_ACCESS_FINE_LOCATION);
+            return;
+        }
+
+        if (checkSelfPermission(WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]
+                            {Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
             return;
         }
 
