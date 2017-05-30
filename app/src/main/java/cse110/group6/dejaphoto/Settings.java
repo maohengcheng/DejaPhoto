@@ -4,18 +4,15 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-<<<<<<< HEAD
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
-=======
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
->>>>>>> 56b9950f9427fe7cd1a7a07512389376d5008de4
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -31,10 +28,8 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-<<<<<<< HEAD
 import java.io.FileNotFoundException;
 import java.io.IOException;
-=======
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -45,11 +40,6 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static cse110.group6.dejaphoto.R.layout.activity_settings;
 
 public class Settings extends AppCompatActivity implements OnItemSelectedListener {
->>>>>>> 56b9950f9427fe7cd1a7a07512389376d5008de4
-
-public class Settings extends AppCompatActivity implements OnItemSelectedListener {
-    public static final int REQUEST_CODE = 420;
-    Uri imgUri;
     Spinner spinnerDialog;
     ArrayAdapter adapter;
 
@@ -93,10 +83,9 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
     }
 
     public void photoPicker(View view){
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select image"),REQUEST_CODE);
+        Intent intent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, REQUEST_CODE);
     }
 
     @Override
@@ -120,7 +109,6 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 /* get read external storage permission during runtime to get
                 access to the gallery
                 */
-                requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
 
                 if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     requestPermissions(new String[]
@@ -154,14 +142,14 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
 
                 /* get other album directory and write to it */
 
-                final String dirName = "DejaPhoto Other Albums";
+                final String dirName = "DejaPhotoCopied";
                 final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
                         (Environment.DIRECTORY_PICTURES), dirName);
-                imageRoot.mkdirs();
-                final File image = new File(imageRoot, "image1.jpg");
-                if(!image.exists()){
-                    image.mkdirs();
-                }
+                if(!imageRoot.exists())
+                    imageRoot.mkdirs();
+                final File image = new File(imageRoot, imgUri.getLastPathSegment());
+                if(image.exists())
+                    image.delete();
 
                 /*
                 String path = Environment.getExternalStoragePublicDirectory().toString();
@@ -170,9 +158,8 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 if (!image.exists()) {
                     image.mkdirs();
                 }*/
-
-                OutputStream fOutputStream = null;
-                fOutputStream = new FileOutputStream(image);
+                image.createNewFile();
+                OutputStream fOutputStream = new FileOutputStream(image);
                 b2.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream);
                 fOutputStream.flush();
                 fOutputStream.close();
@@ -194,7 +181,7 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
 
     }
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
@@ -210,7 +197,7 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
             }
         }
 
-    }
+    }*/
 
     public void choosePhotos_btn(View view) {
         Intent intent = new Intent();
