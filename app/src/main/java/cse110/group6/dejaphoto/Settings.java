@@ -2,6 +2,9 @@ package cse110.group6.dejaphoto;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -13,8 +16,12 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class Settings extends AppCompatActivity implements OnItemSelectedListener {
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
+public class Settings extends AppCompatActivity implements OnItemSelectedListener {
+    public static final int REQUEST_CODE = 420;
+    Uri imgUri;
     Spinner spinnerDialog;
     ArrayAdapter adapter;
 
@@ -52,4 +59,31 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
     public void onNothingSelected(AdapterView<?> parent) {
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imgUri = data.getData();
+
+            try {
+                Bitmap bm = MediaStore.Images.Media.getBitmap(getContentResolver(), imgUri);
+                Toast.makeText(getApplicationContext(), "Image has been set",Toast.LENGTH_LONG).show();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public void choosePhotos_btn(View view) {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select image"), REQUEST_CODE);
+    }
+
+
 }
