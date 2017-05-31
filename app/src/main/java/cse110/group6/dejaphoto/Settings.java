@@ -145,14 +145,15 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 final String dirName = "DejaPhotoCopied";
                 //final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
                 //        (Environment.DIRECTORY_PICTURES), dirName);
+                //content://media/external/images/media
                 final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
-                        (Environment.DIRECTORY_PICTURES), dirName);
+                        (Environment.DIRECTORY_PICTURES), File.separator + dirName);
                 //imageRoot.delete();
                 if(!imageRoot.exists())
                     imageRoot.mkdirs();
-                final File image = new File(imageRoot, imgUri.getLastPathSegment());
-                //if(image.exists())
-                //    image.delete();
+                final File image = new File(imageRoot, File.separator + imgUri.getLastPathSegment());
+                if(image.exists())
+                    image.delete();
 
                 /*
                 String path = Environment.getExternalStoragePublicDirectory().toString();
@@ -166,10 +167,12 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 b2.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream);
                 fOutputStream.flush();
                 fOutputStream.close();
-                MediaStore.Images.Media.insertImage(getContentResolver(), image.getAbsolutePath(),
-                        image.getName(), image.getName());
+                System.out.println(image.toString());
+                System.out.println(MediaStore.Images.Media.insertImage(getContentResolver(), image.getAbsolutePath(),
+                        image.getName(), image.getName()));
 
                 Toast.makeText(getApplicationContext(),"Made image", Toast.LENGTH_SHORT).show();
+
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();

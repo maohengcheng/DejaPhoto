@@ -24,6 +24,7 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
@@ -75,10 +76,46 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE = 420;
     private Uri imgUri;
+    String dirName;
+    File imageRoot;
+    String selection;
+    String[] selectionArgs;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        dirName = "DejaPhotoCamera";
+        //final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
+        //        (Environment.DIRECTORY_PICTURES), dirName);
+        imageRoot = new File(Environment.getExternalStoragePublicDirectory
+                (Environment.DIRECTORY_PICTURES), File.separator + dirName);
+        //imageRoot.delete();
+        if(!imageRoot.exists())
+            imageRoot.mkdirs();
+
+        dirName = "DejaPhotoFriends";
+        //final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
+        //        (Environment.DIRECTORY_PICTURES), dirName);
+        imageRoot = new File(Environment.getExternalStoragePublicDirectory
+                (Environment.DIRECTORY_PICTURES), File.separator + dirName);
+        //imageRoot.delete();
+        if(!imageRoot.exists())
+            imageRoot.mkdirs();
+
+        dirName = "DejaPhotoCopied";
+        //final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
+        //        (Environment.DIRECTORY_PICTURES), dirName);
+        imageRoot = new File(Environment.getExternalStoragePublicDirectory
+                (Environment.DIRECTORY_PICTURES), File.separator + dirName);
+        //imageRoot.delete();
+        if(!imageRoot.exists())
+            imageRoot.mkdirs();
+
+        System.out.println(imageRoot.toString());
+
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imageView = (ImageView) findViewById(R.id.mainView);
@@ -193,11 +230,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        selection=MediaStore.Video.Media.DATA +" like?";
+        //selectionArgs=new String[]{"%DejaPhotoCopied%"};
+        selectionArgs=new String[]{"%Pictures%"};
 
         photos.setCursor(getContentResolver().
                 query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         photos.getImages(), null, null,
                         MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
+        /*
+        photos.setCursor(getContentResolver().
+                query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        photos.getImages(), selection, selectionArgs,
+                        MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
+        */
         imageLoc = photos.getMostRecentImage();
         if(imageLoc != null) {
             imageFile = new File(imageLoc);
@@ -209,8 +255,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
         }
-
-
     }
     @Override
     protected void onRestart() {
