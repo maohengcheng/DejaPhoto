@@ -73,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
     public static long backgroundInterval = 10000; //10seconds default
     Intent otherIntent;
 
+    public static final int REQUEST_CODE = 420;
+    private Uri imgUri;
+
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {

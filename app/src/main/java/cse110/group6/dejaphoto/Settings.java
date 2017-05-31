@@ -143,13 +143,16 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 /* get other album directory and write to it */
 
                 final String dirName = "DejaPhotoCopied";
+                //final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
+                //        (Environment.DIRECTORY_PICTURES), dirName);
                 final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
                         (Environment.DIRECTORY_PICTURES), dirName);
+                //imageRoot.delete();
                 if(!imageRoot.exists())
                     imageRoot.mkdirs();
                 final File image = new File(imageRoot, imgUri.getLastPathSegment());
-                if(image.exists())
-                    image.delete();
+                //if(image.exists())
+                //    image.delete();
 
                 /*
                 String path = Environment.getExternalStoragePublicDirectory().toString();
@@ -158,7 +161,7 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 if (!image.exists()) {
                     image.mkdirs();
                 }*/
-                image.createNewFile();
+                //image.createNewFile();
                 OutputStream fOutputStream = new FileOutputStream(image);
                 b2.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream);
                 fOutputStream.flush();
