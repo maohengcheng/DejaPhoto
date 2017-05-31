@@ -15,6 +15,9 @@
     <string name="own_photos_switch">View Your Photos:</string>
     <string name="friends_photos_switch">View Friends Photos:</string>
     <string name="share_photos_switch">Share Photos:</string>
+    <string name="friends_list_entry">Enter a friend\'s email...</string>
+    <string name="add_friend">Add Friend</string>
+    <string name="remove_friend">Remove Friend</string>
 
     <string-array name="time_entries">
         <item name="10 seconds">10 seconds</item>
@@ -24,7 +27,7 @@
         <item name="45 seconds">45 seconds</item>
         <item name="60 seconds">60 seconds</item>
     </string-array>
-    
+
     <string-array name="time_values">
         <item>10000</item>
         <item>15000</item>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="cse110.group6.dejaphoto.FriendsList">
+
+    <EditText
+        android:id="@+id/friendsListEntry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:inputType="textEmailAddress|textNoSuggestions"
+        android:text="@string/friends_list_entry"/>
+
+    <Button
+        android:id="@+id/addFriendButton"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/friendsListEntry"
+        android:onClick="addFriend"
+        android:text="@string/add_friend"/>
+
+    <Button
+        android:id="@+id/removeFriendButton"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/friendsListEntry"
+        android:onClick="removeFriend"
+        android:text="@string/remove_friend"/>
+
+
+
+</android.support.constraint.ConstraintLayout>
