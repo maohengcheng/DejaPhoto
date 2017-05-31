@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "540105819460",
+    "firebase_url": "https://dejaphoto-fa7ca.firebaseio.com",
+    "project_id": "dejaphoto-fa7ca",
+    "storage_bucket": "dejaphoto-fa7ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540105819460:android:255a219dbe657feb",
+        "android_client_info": {
+          "package_name": "cse110.group6.dejaphoto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "540105819460-smh10hnsgais5qn8ql1l7djugbdcqtsg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cse110.group6.dejaphoto",
+            "certificate_hash": "30bd4f815aa9e7d7531da635cf38e68d553618bf"
+          }
+        },
+        {
+          "client_id": "540105819460-soa3bbsrjl248q6vripjnof03qg92emv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cse110.group6.dejaphoto",
+            "certificate_hash": "d7710bd273bc2fd8d8026a3f5a2ec3721f6290c7"
+          }
+        },
+        {
+          "client_id": "540105819460-adjlkf4f14qdr21n4dvh19be7ogqch8k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvd-PNkaFYhVAl0_e_-mD7cxltQ07PnKc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "540105819460-adjlkf4f14qdr21n4dvh19be7ogqch8k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
