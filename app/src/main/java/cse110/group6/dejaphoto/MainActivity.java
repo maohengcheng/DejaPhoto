@@ -382,7 +382,8 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_friends_list:
-                Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
+                Intent startFriendsActivity = new Intent(this, FriendsList.class);
+                startActivity(startFriendsActivity);
 
                 return true;
 

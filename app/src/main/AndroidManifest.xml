@@ -39,7 +39,8 @@
             android:name=".SetBackground"
             android:exported="false" />
 
-        <activity android:name=".Settings"></activity>
+        <activity android:name=".Settings" />
+        <activity android:name=".FriendsList"></activity>
     </application>
 
 </manifest>
