@@ -32,12 +32,12 @@ public class FriendsList extends AppCompatActivity implements View.OnClickListen
     }
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
         SharedPreferences.Editor editor = friendFile.edit();
         editor.putStringSet(FRIENDS_LIST_KEY, friendSet);
         editor.commit();
 
-        super.onStop();
+        super.onPause();
     }
 
     @Override
