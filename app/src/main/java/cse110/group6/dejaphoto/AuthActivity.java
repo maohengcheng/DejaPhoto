@@ -81,8 +81,14 @@ public class AuthActivity extends AppCompatActivity{
         btnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAuth.signOut();
-                toastMessages("Signing Out...");
+                if(valid_user == true) {
+                    mAuth.signOut();
+                    valid_user = false;
+                    toastMessages("Signing Out...");
+                }
+                else {
+                    toastMessages("Already signed out");
+                }
             }
         });
 
