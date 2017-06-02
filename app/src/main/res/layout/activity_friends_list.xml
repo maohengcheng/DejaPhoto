@@ -13,7 +13,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:inputType="textEmailAddress|textNoSuggestions"
+        android:inputType="textEmailAddress"
         android:text="@string/friends_list_entry"/>
 
     <Button
@@ -35,6 +35,14 @@
         app:layout_constraintTop_toBottomOf="@id/friendsListEntry"
         android:onClick="removeFriend"
         android:text="@string/remove_friend"/>
+
+    <ListView
+        android:id="@+id/friendsListView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/addFriendButton"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"></ListView>
 
 
 
