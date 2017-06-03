@@ -181,12 +181,17 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 //final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
                 //        (Environment.DIRECTORY_PICTURES), dirName);
                 //content://media/external/images/media
+<<<<<<< HEAD
+                final File imageRoot = new File(MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString() + "/" + dirName);
+=======
                 final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
                         (Environment.DIRECTORY_PICTURES), File.separator + dirName);
 
+>>>>>>> refs/remotes/origin/master
                 //imageRoot.delete();
                 if(!imageRoot.exists())
                     imageRoot.mkdirs();
+                Toast.makeText(getApplicationContext(), imageRoot.toString(), Toast.LENGTH_LONG).show();
                 final File image = new File(imageRoot, File.separator + imgUri.getLastPathSegment());
                 if(image.exists())
                     image.delete();
@@ -202,9 +207,16 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 b2.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream);
                 fOutputStream.flush();
                 fOutputStream.close();
+<<<<<<< HEAD
+                Toast.makeText(getApplicationContext(), image.getPath(), Toast.LENGTH_LONG).show();
+                System.out.println(image.getAbsolutePath().toString());
+                System.out.println(MediaStore.Images.Media.insertImage(getContentResolver(), dirName + "/" + imgUri.getLastPathSegment(),
+                        image.getName(), image.getName()));
+=======
                 System.out.println(image.toString());
                 String realStorage = MediaStore.Images.Media.insertImage(getContentResolver(), image.getAbsolutePath(),
                         image.getName(), image.getName());
+>>>>>>> refs/remotes/origin/master
 
                 Toast.makeText(getApplicationContext(),"Made image", Toast.LENGTH_SHORT).show();
 

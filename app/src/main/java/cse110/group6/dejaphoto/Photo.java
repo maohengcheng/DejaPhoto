@@ -2,6 +2,7 @@ package cse110.group6.dejaphoto;
 
 
 import android.location.Location;
+import android.net.Uri;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -16,22 +17,27 @@ public class Photo implements Serializable{
     double longitude;
     double latitude;
     Date dateTaken;
-    boolean karma;
+    int karma;
     boolean released;
+    boolean shared;
     double weight;
+    String uriLastPathSegment;
     private static final long millisecondsInDay = 86400000;
     private static final long millisecondsInWeek = 7 * millisecondsInDay;
     private static final long millisecondsInMonth = 30 * millisecondsInDay;
 
     /* constructor */
-    public Photo(String filePath, double longitude, double latitude, Date dateTaken, boolean karma, boolean released, double weight) {
+    public Photo(String filePath, double longitude, double latitude, Date dateTaken, int karma,
+                 boolean released, boolean shared, double weight, String uriLastPathSegment) {
         this.filePath = filePath;
         this.longitude = longitude;
         this.latitude = latitude;
         this.dateTaken = dateTaken;
         this.karma = karma;
         this.released = released;
+        this.shared = shared;
         this.weight = weight;
+        this.uriLastPathSegment = uriLastPathSegment;
     }
 
     /* setters */
@@ -49,10 +55,6 @@ public class Photo implements Serializable{
 
     public void setDateTaken(Date dateTaken) {
         this.dateTaken = dateTaken;
-    }
-
-    public void setKarma(boolean karma) {
-        this.karma = karma;
     }
 
     public void setReleased(boolean released) {
@@ -80,13 +82,22 @@ public class Photo implements Serializable{
         return dateTaken;
     }
 
-    public boolean isKarma() {
-        return karma;
-    }
-
     public boolean isReleased() {
         return released;
     }
+
+    public int getKarma() { return karma; }
+
+    public void setKarma(int karma) { this.karma = karma; }
+
+    public String getUriLastPathSegment() { return uriLastPathSegment; }
+
+    public void setUriLastPathSegment(String uriLastPathSegment) { this.uriLastPathSegment = uriLastPathSegment; }
+
+    public boolean isShared() { return shared;}
+
+    public void setShared(boolean shared) { this.shared = shared; }
+
 
 
 
@@ -113,7 +124,7 @@ public class Photo implements Serializable{
         }
 
         //karma
-        if(this.karma){
+        if(karma > 0){
             weight += 75;
         }
 

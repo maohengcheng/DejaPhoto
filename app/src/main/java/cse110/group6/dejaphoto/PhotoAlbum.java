@@ -2,6 +2,7 @@ package cse110.group6.dejaphoto;
 
 import android.annotation.TargetApi;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 
@@ -44,7 +45,9 @@ public class PhotoAlbum implements Serializable{
             double longitude = cursor.getDouble(5);
             double latitude = cursor.getDouble(6);
             Date dateTaken = new Date(cursor.getLong(3) * 1000);
-            photos.add(new Photo(filePath, longitude, latitude, dateTaken, false, false, 0));
+            Uri thisUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + cursor.getInt(0));
+            //String namer = (cursor.getString(1)).substring(cursor.getString(1).lastIndexOf("/") + 1);
+            photos.add(new Photo(filePath, longitude, latitude, dateTaken, 0, false, true , 0, thisUri.getLastPathSegment()));
             //System.out.println("id: " + filePath + " date: " + dateTaken + " long: " + longitude + " lat: " + latitude);
             //System.out.println("filepath from photos: " + photos.get(i).getFilePath());
             cursor.moveToNext();
