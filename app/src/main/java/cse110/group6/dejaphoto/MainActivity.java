@@ -54,6 +54,20 @@ import static cse110.group6.dejaphoto.R.mipmap.ic_release;
 import static cse110.group6.dejaphoto.R.mipmap.ic_undo;
 import static java.lang.Boolean.FALSE;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE = 20;
     private static int RESULT_LOAD_IMG = 1;
@@ -73,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     File imageFile;
     public static long backgroundInterval = 10000; //10seconds default
     Intent otherIntent;
+    public static final String IMAGE_FOLDER_REF = "Images";
 
     public static final int REQUEST_CODE = 420;
     private Uri imgUri;
@@ -80,6 +95,10 @@ public class MainActivity extends AppCompatActivity {
     File imageRoot;
     String selection;
     String[] selectionArgs;
+
+    private StorageReference mStorageRef;
+    FirebaseUser user;
+    private DatabaseReference mDatabaseRef;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -114,7 +133,10 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println(imageRoot.toString());
 
-
+        /* get the firebase database references */
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getUid() + "/" + IMAGE_FOLDER_REF);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -230,9 +252,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        selection=MediaStore.Video.Media.DATA +" like?";
+        //selection=MediaStore.Video.Media.DATA +" like?";
+        selection=MediaStore.Images.Media.DATA +" like?";
         //selectionArgs=new String[]{"%DejaPhotoCopied%"};
         selectionArgs=new String[]{"%Pictures%"};
+
 
         photos.setCursor(getContentResolver().
                 query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -243,7 +267,8 @@ public class MainActivity extends AppCompatActivity {
                 query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         photos.getImages(), selection, selectionArgs,
                         MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
-        */
+                        */
+
         imageLoc = photos.getMostRecentImage();
         if(imageLoc != null) {
             imageFile = new File(imageLoc);
@@ -251,6 +276,22 @@ public class MainActivity extends AppCompatActivity {
             photos.initializePhotos();
             photoPos = photos.getCursor().getPosition();
             Photo currPhoto = photos.getPhotos().get(photoPos);
+
+            mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    if (snapshot.hasChild("name")) {
+                        // run some code
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
             updateLocationDisplay(currPhoto);
         } else {
             Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
@@ -456,7 +497,8 @@ public class MainActivity extends AppCompatActivity {
         photoPos = photos.getCursor().getPosition();
         Photo karmaPhoto = photos.getPhotos().get(photoPos);
         // set current photo's karma to true
-        karmaPhoto.setKarma(true);
+        int currKarma = karmaPhoto.getKarma();
+        karmaPhoto.setKarma(currKarma + 1);
 
         Toast.makeText(this, karmaPhoto.getFilePath() + " has been given " +
                 "good karma!", Toast.LENGTH_SHORT).show();
@@ -479,6 +521,7 @@ public class MainActivity extends AppCompatActivity {
         else {
             button.setImageResource(R.mipmap.ic_undo);
             releasePhoto.setReleased(true);
+            releasePhoto.setKarma(0);
             Toast.makeText(this, releasePhoto.getFilePath() + "PhotoAlbum " +
                     "is released", Toast.LENGTH_SHORT).show();
         }
@@ -496,7 +539,7 @@ public class MainActivity extends AppCompatActivity {
         ImageButton releaseButton = (ImageButton) findViewById(R.id.releaseButton);
 
         /* set the karma buttona for this picture to the correct icon */
-        if (photo.isKarma()){
+        if (photo.getKarma() > 0){
             karmaButton.setImageResource(R.mipmap.ic_karma);
             karmaButton.setTag(ic_karma);
         }

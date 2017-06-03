@@ -2,6 +2,8 @@ package cse110.group6.dejaphoto;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +14,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -39,6 +43,21 @@ import java.io.OutputStream;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static cse110.group6.dejaphoto.R.layout.activity_settings;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+
 public class Settings extends AppCompatActivity implements OnItemSelectedListener {
     Spinner spinnerDialog;
     ArrayAdapter adapter;
@@ -52,6 +71,10 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
     private Uri imgUri;
     public static final String FB_STORAGE_PATH = "image/";
     public static final String FB_DATABASE_PATH = "image/";
+    public static final String IMAGE_FOLDER_REF = "Images";
+
+    private StorageReference mStorageRef;
+    private DatabaseReference mDatabaseRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +88,10 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
         spinnerDialog.setAdapter(adapter);
         spinnerDialog.setOnItemSelectedListener(Settings.this);
 
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        //mDatabaseRef = FirebaseDatabase.getInstance().getReference(FB_DATABASE_PATH);
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getUid() + "/" + IMAGE_FOLDER_REF);
     }
 
     @Override
@@ -82,12 +109,20 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
         setResult(RESULT_OK, timeChange);
     }
 
+    public String getImageExt(Uri uri) {
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+
     public void photoPicker(View view){
         Intent intent = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, REQUEST_CODE);
     }
 
+
+    @SuppressWarnings("VisibleForTests")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -148,13 +183,13 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 //content://media/external/images/media
                 final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
                         (Environment.DIRECTORY_PICTURES), File.separator + dirName);
+
                 //imageRoot.delete();
                 if(!imageRoot.exists())
                     imageRoot.mkdirs();
                 final File image = new File(imageRoot, File.separator + imgUri.getLastPathSegment());
                 if(image.exists())
                     image.delete();
-
                 /*
                 String path = Environment.getExternalStoragePublicDirectory().toString();
                 //File path = Environment.getExternalStoragePublicDirectory();
@@ -168,8 +203,8 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 fOutputStream.flush();
                 fOutputStream.close();
                 System.out.println(image.toString());
-                System.out.println(MediaStore.Images.Media.insertImage(getContentResolver(), image.getAbsolutePath(),
-                        image.getName(), image.getName()));
+                //System.out.println(MediaStore.Images.Media.insertImage(getContentResolver(), image.getAbsolutePath(),
+                //        image.getName(), image.getName()));
 
                 Toast.makeText(getApplicationContext(),"Made image", Toast.LENGTH_SHORT).show();
 
@@ -178,6 +213,47 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+
+            if (imgUri !=null) {
+                final ProgressDialog dialog = new ProgressDialog(this);
+                dialog.setTitle("Uploading image");
+                dialog.show();
+                StorageReference ref = mStorageRef.child(FB_STORAGE_PATH + System.currentTimeMillis() +
+                        "." + getImageExt(imgUri));
+                //Add file
+                ref.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        //Dismiss dialog when done
+                        dialog.dismiss();
+                        Toast.makeText(getApplicationContext(), "Image uploaded", Toast.LENGTH_SHORT).show();
+                        ImageUpload imageUpload = new ImageUpload(imgUri.getLastPathSegment(),
+                                taskSnapshot.getDownloadUrl().toString(), 0);
+                        // /Save image info into firebase database
+                        //String uploadId = mDatabaseRef.push().getKey();
+                        String uploadId = imgUri.getLastPathSegment();
+                        mDatabaseRef.child(uploadId).setValue(imageUpload);
+                    }
+                })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                //Dismiss dialog and show an error
+                                dialog.dismiss();
+                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                //Show upload progress
+                                double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                                dialog.setMessage("Uploaded " + (int)progress+"0");
+                            }
+                        });
+            }else {
+                Toast.makeText(getApplicationContext(), "Please select an image", Toast.LENGTH_SHORT).show();
             }
         }
     }
