@@ -146,11 +146,11 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 //final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
                 //        (Environment.DIRECTORY_PICTURES), dirName);
                 //content://media/external/images/media
-                final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
-                        (Environment.DIRECTORY_PICTURES), File.separator + dirName);
+                final File imageRoot = new File(MediaStore.Images.Media.EXTERNAL_CONTENT_URI.toString() + "/" + dirName);
                 //imageRoot.delete();
                 if(!imageRoot.exists())
                     imageRoot.mkdirs();
+                Toast.makeText(getApplicationContext(), imageRoot.toString(), Toast.LENGTH_LONG).show();
                 final File image = new File(imageRoot, File.separator + imgUri.getLastPathSegment());
                 if(image.exists())
                     image.delete();
@@ -167,8 +167,9 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 b2.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream);
                 fOutputStream.flush();
                 fOutputStream.close();
-                System.out.println(image.toString());
-                System.out.println(MediaStore.Images.Media.insertImage(getContentResolver(), image.getAbsolutePath(),
+                Toast.makeText(getApplicationContext(), image.getPath(), Toast.LENGTH_LONG).show();
+                System.out.println(image.getAbsolutePath().toString());
+                System.out.println(MediaStore.Images.Media.insertImage(getContentResolver(), dirName + "/" + imgUri.getLastPathSegment(),
                         image.getName(), image.getName()));
 
                 Toast.makeText(getApplicationContext(),"Made image", Toast.LENGTH_SHORT).show();

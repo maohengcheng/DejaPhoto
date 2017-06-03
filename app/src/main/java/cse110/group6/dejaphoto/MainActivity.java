@@ -188,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
                     setImageView(imageLoc, imageView, imageFile);
                     setButtons(currPhoto);
                     updateLocationDisplay(currPhoto);
+                    Toast.makeText(MainActivity.this, "Swiped Right", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MainActivity.this, "No previous image",
                             Toast.LENGTH_SHORT).show();
@@ -206,6 +207,8 @@ public class MainActivity extends AppCompatActivity {
                     setImageView(imageLoc, imageView, imageFile);
                     setButtons(currPhoto);
                     updateLocationDisplay(currPhoto);
+                    Toast.makeText(MainActivity.this, "Swiped Left", Toast.LENGTH_SHORT).show();
+
                 } else {
                     Toast.makeText(MainActivity.this, "No next image",
                             Toast.LENGTH_SHORT).show();
@@ -230,20 +233,21 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        selection=MediaStore.Video.Media.DATA +" like?";
+        selection=MediaStore.Images.Media.DATA +" like?";
         //selectionArgs=new String[]{"%DejaPhotoCopied%"};
-        selectionArgs=new String[]{"%Pictures%"};
+        selectionArgs=new String[]{"%DejaPhotoCopied%"};
 
+        /*
         photos.setCursor(getContentResolver().
                 query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         photos.getImages(), null, null,
                         MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
-        /*
+        */
         photos.setCursor(getContentResolver().
                 query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         photos.getImages(), selection, selectionArgs,
                         MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
-        */
+
         imageLoc = photos.getMostRecentImage();
         if(imageLoc != null) {
             imageFile = new File(imageLoc);
