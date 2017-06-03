@@ -8,6 +8,7 @@ public class ImageUpload {
     public String name;
     public String url;
     public int karma;
+    public  boolean shared;
 
     public int getKarma() {
         return karma;
@@ -21,9 +22,14 @@ public class ImageUpload {
         return url;
     }
 
-    public ImageUpload(String name, String url, int karma) {
+    public boolean isShared(){
+        return shared;
+    }
+
+    public ImageUpload(String name, String url, int karma, boolean shared) {
         this.name = name;
         this.url = url;
         this.karma = karma;
+        this.shared = shared;
     }
 }

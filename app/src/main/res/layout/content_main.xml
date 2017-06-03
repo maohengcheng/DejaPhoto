@@ -78,6 +78,20 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
+    <TextView
+        android:id="@+id/karmaDisplay"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:contentDescription="karmaCount"
+        android:text="Karma: "
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="438dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/location_border"
+        android:gravity="center"
+        android:textColor="#000000"
+        app:layout_constraintRight_toRightOf="parent" />
+
 
     <!-- Commented out for UI purposes
     <Button

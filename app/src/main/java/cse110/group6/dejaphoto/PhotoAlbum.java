@@ -46,7 +46,8 @@ public class PhotoAlbum implements Serializable{
             double latitude = cursor.getDouble(6);
             Date dateTaken = new Date(cursor.getLong(3) * 1000);
             Uri thisUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + cursor.getInt(0));
-            photos.add(new Photo(filePath, longitude, latitude, dateTaken, 0, false, 0, thisUri.getLastPathSegment()));
+            //String namer = (cursor.getString(1)).substring(cursor.getString(1).lastIndexOf("/") + 1);
+            photos.add(new Photo(filePath, longitude, latitude, dateTaken, 0, false, true , 0, thisUri.getLastPathSegment()));
             //System.out.println("id: " + filePath + " date: " + dateTaken + " long: " + longitude + " lat: " + latitude);
             //System.out.println("filepath from photos: " + photos.get(i).getFilePath());
             cursor.moveToNext();

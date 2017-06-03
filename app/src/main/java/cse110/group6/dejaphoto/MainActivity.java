@@ -12,7 +12,9 @@ package cse110.group6.dejaphoto;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -26,7 +28,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -35,6 +39,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -42,9 +47,14 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.graphics.BitmapFactory.decodeFile;
@@ -87,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
     File imageFile;
     public static long backgroundInterval = 10000; //10seconds default
     Intent otherIntent;
+    public static final String FB_STORAGE_PATH = "image/";
+    public static final String FB_DATABASE_PATH = "image/";
     public static final String IMAGE_FOLDER_REF = "Images";
 
     public static final int REQUEST_CODE = 420;
@@ -213,6 +225,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(MainActivity.this, "No previous image",
                             Toast.LENGTH_SHORT).show();
+                    photos.cursor.moveToFirst();
+                    imageLoc = photos.getImage(photos.getCursor().getPosition());
                 }
             }
             /* on left swipe, get next image and set app's view
@@ -231,6 +245,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(MainActivity.this, "No next image",
                             Toast.LENGTH_SHORT).show();
+                    photos.cursor.moveToLast();
+                    imageLoc = photos.getImage(photos.getCursor().getPosition());
                 }
             }
         };
@@ -244,7 +260,6 @@ public class MainActivity extends AppCompatActivity {
         /*Local Receiver for managing data from services */
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mMessageReceiver, new IntentFilter("intentKey"));
-
     }
     /* end of onCreate */
 
@@ -257,17 +272,16 @@ public class MainActivity extends AppCompatActivity {
         //selectionArgs=new String[]{"%DejaPhotoCopied%"};
         selectionArgs=new String[]{"%Pictures%"};
 
-
+        /*
         photos.setCursor(getContentResolver().
                 query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         photos.getImages(), null, null,
                         MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
-        /*
+        */
         photos.setCursor(getContentResolver().
                 query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         photos.getImages(), selection, selectionArgs,
                         MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"));
-                        */
 
         imageLoc = photos.getMostRecentImage();
         if(imageLoc != null) {
@@ -277,24 +291,32 @@ public class MainActivity extends AppCompatActivity {
             photoPos = photos.getCursor().getPosition();
             Photo currPhoto = photos.getPhotos().get(photoPos);
 
+
+
+
+            // Create listener to get image data from database
+            //mDatabaseRef.addValueEventListener(new ValueEventListener() {
             mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    if (snapshot.hasChild("name")) {
-                        // run some code
+            @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for(Photo i : photos.photos) {
+                        for (DataSnapshot imageSnapshot : dataSnapshot.getChildren()) {
+                            if (imageSnapshot.child("name").getValue(String.class).equals(i.getUriLastPathSegment())){
+                                i.setUriLastPathSegment(imageSnapshot.child("name").getValue(String.class));
+                                i.setKarma(imageSnapshot.child("karma").getValue(Integer.class));
+                            }
+                        }
                     }
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
+                public void onCancelled(DatabaseError databaseError) {}
             });
 
-
+            setButtons(currPhoto);
             updateLocationDisplay(currPhoto);
         } else {
-            Toast.makeText(this, "No image", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No image. Please select an image", Toast.LENGTH_SHORT).show();
         }
     }
     @Override
@@ -310,12 +332,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop(){
         super.onStop();
 
-        photoPos = photos.getCursor().getPosition();
-        imageLoc = photos.getImage(photoPos);
+        if(imageLoc != null) {
 
-        //   Intent intent = new Intent(MainActivity.this, SetBackground.class);
-        //  intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
-        //  startService(intent);
+            photoPos = photos.getCursor().getPosition();
+            imageLoc = photos.getImage(photoPos);
+
+            //   Intent intent = new Intent(MainActivity.this, SetBackground.class);
+            //  intent.putExtra("filepath", imageLoc); // passing in just a string, the images filepath
+            //  startService(intent);
 
         /*--------------------------------------------------------
         //BackgroundService Call
@@ -323,12 +347,13 @@ public class MainActivity extends AppCompatActivity {
         //-we use putExtra to passed in variables to the service
         //-------------------------------------------------------*/
 
-        otherIntent = new Intent(MainActivity.this, BackgroundService.class);
-        otherIntent.putExtra("filepath", imageLoc); //passing in just a string of image filepath
-        otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
-        otherIntent.putExtra("Interval", backgroundInterval); // passing in the time interval
-        //Call the service to run in the background
-        startService(otherIntent);
+            otherIntent = new Intent(MainActivity.this, BackgroundService.class);
+            otherIntent.putExtra("filepath", imageLoc); //passing in just a string of image filepath
+            otherIntent.putExtra("filepaths", photos.getPhotos()); // passing in the whole vector of photos
+            otherIntent.putExtra("Interval", backgroundInterval); // passing in the time interval
+            //Call the service to run in the background
+            startService(otherIntent);
+        }
 
     }
 
@@ -414,6 +439,7 @@ public class MainActivity extends AppCompatActivity {
     /* gets the selected image's data and sets it to imageView and the
         background
      */
+    @SuppressWarnings("VisibleForTests")
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -495,20 +521,43 @@ public class MainActivity extends AppCompatActivity {
 
         //get current images position in photoalbum
         photoPos = photos.getCursor().getPosition();
-        Photo karmaPhoto = photos.getPhotos().get(photoPos);
+        final Photo karmaPhoto = photos.getPhotos().get(photoPos);
         // set current photo's karma to true
-        int currKarma = karmaPhoto.getKarma();
+        final int currKarma = karmaPhoto.getKarma();
         karmaPhoto.setKarma(currKarma + 1);
 
+        TextView karmaview = (TextView) findViewById(R.id.karmaDisplay);
+        karmaview.setText("Karma: " + karmaPhoto.getKarma());
+
+        //mDatabaseRef.addValueEventListener(new ValueEventListener() {
+        mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot imageSnapshot : dataSnapshot.getChildren()) {
+                        if (imageSnapshot.child("name").getValue(String.class).equals(karmaPhoto.getUriLastPathSegment())){
+                            Map<String, Object> update = new HashMap<String, Object>();
+                            update.put(karmaPhoto.getUriLastPathSegment(), new ImageUpload(karmaPhoto.getUriLastPathSegment(),
+                                    imageSnapshot.child("url").getValue(String.class), currKarma + 1,
+                                    imageSnapshot.child("shared").getValue(boolean.class)));
+                            mDatabaseRef.updateChildren(update);
+                        }
+                    }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
         Toast.makeText(this, karmaPhoto.getFilePath() + " has been given " +
-                "good karma!", Toast.LENGTH_SHORT).show();
+                "good karma! It now has " + karmaPhoto.getKarma() + " karma!"
+                , Toast.LENGTH_SHORT).show();
     }
 
     /* function called for when the release button is pressed */
     public void toggleReleasePhoto(View view) {
         ImageButton button = (ImageButton) findViewById(R.id.releaseButton);
         photoPos = photos.getCursor().getPosition();
-        Photo releasePhoto = photos.getPhotos().get(photoPos);
+        final Photo releasePhoto = photos.getPhotos().get(photoPos);
 
         // check if photo was released or not, then act accordingly by setting
         // the released flag to the opposite boolean value
@@ -524,6 +573,29 @@ public class MainActivity extends AppCompatActivity {
             releasePhoto.setKarma(0);
             Toast.makeText(this, releasePhoto.getFilePath() + "PhotoAlbum " +
                     "is released", Toast.LENGTH_SHORT).show();
+
+            TextView karmaview = (TextView) findViewById(R.id.karmaDisplay);
+            karmaview.setText("Karma: " + releasePhoto.getKarma());
+
+            // Create listener to get images, then update the appropriate images' karma
+            //mDatabaseRef.addValueEventListener(new ValueEventListener() {
+            mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot imageSnapshot : dataSnapshot.getChildren()) {
+                            if (imageSnapshot.child("name").getValue(String.class).equals(releasePhoto.getUriLastPathSegment())){
+                                Map<String, Object> update = new HashMap<String, Object>();
+                                update.put(releasePhoto.getUriLastPathSegment(), new ImageUpload(releasePhoto.getUriLastPathSegment(),
+                                        imageSnapshot.child("url").getValue(String.class), 0,
+                                        imageSnapshot.child("shared").getValue(boolean.class)));
+                                mDatabaseRef.updateChildren(update);
+                            }
+                        }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            });
         }
     }
 
@@ -537,6 +609,9 @@ public class MainActivity extends AppCompatActivity {
     public void setButtons(Photo photo){
         ImageButton karmaButton = (ImageButton) findViewById(R.id.karmaButton);
         ImageButton releaseButton = (ImageButton) findViewById(R.id.releaseButton);
+
+        TextView karmaview = (TextView) findViewById(R.id.karmaDisplay);
+        karmaview.setText("Karma: " + photo.getKarma());
 
         /* set the karma buttona for this picture to the correct icon */
         if (photo.getKarma() > 0){

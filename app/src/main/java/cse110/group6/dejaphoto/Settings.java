@@ -203,11 +203,12 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 fOutputStream.flush();
                 fOutputStream.close();
                 System.out.println(image.toString());
-                //System.out.println(MediaStore.Images.Media.insertImage(getContentResolver(), image.getAbsolutePath(),
-                //        image.getName(), image.getName()));
+                String realStorage = MediaStore.Images.Media.insertImage(getContentResolver(), image.getAbsolutePath(),
+                        image.getName(), image.getName());
 
                 Toast.makeText(getApplicationContext(),"Made image", Toast.LENGTH_SHORT).show();
 
+                imgUri = Uri.parse(realStorage);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -229,7 +230,7 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                         dialog.dismiss();
                         Toast.makeText(getApplicationContext(), "Image uploaded", Toast.LENGTH_SHORT).show();
                         ImageUpload imageUpload = new ImageUpload(imgUri.getLastPathSegment(),
-                                taskSnapshot.getDownloadUrl().toString(), 0);
+                                taskSnapshot.getDownloadUrl().toString(), 0, true);
                         // /Save image info into firebase database
                         //String uploadId = mDatabaseRef.push().getKey();
                         String uploadId = imgUri.getLastPathSegment();

@@ -19,6 +19,7 @@ public class Photo implements Serializable{
     Date dateTaken;
     int karma;
     boolean released;
+    boolean shared;
     double weight;
     String uriLastPathSegment;
     private static final long millisecondsInDay = 86400000;
@@ -26,14 +27,15 @@ public class Photo implements Serializable{
     private static final long millisecondsInMonth = 30 * millisecondsInDay;
 
     /* constructor */
-    public Photo(String filePath, double longitude, double latitude, Date dateTaken, int karma, boolean released, double weight,
-                 String uriLastPathSegment) {
+    public Photo(String filePath, double longitude, double latitude, Date dateTaken, int karma,
+                 boolean released, boolean shared, double weight, String uriLastPathSegment) {
         this.filePath = filePath;
         this.longitude = longitude;
         this.latitude = latitude;
         this.dateTaken = dateTaken;
         this.karma = karma;
         this.released = released;
+        this.shared = shared;
         this.weight = weight;
         this.uriLastPathSegment = uriLastPathSegment;
     }
@@ -91,6 +93,10 @@ public class Photo implements Serializable{
     public String getUriLastPathSegment() { return uriLastPathSegment; }
 
     public void setUriLastPathSegment(String uriLastPathSegment) { this.uriLastPathSegment = uriLastPathSegment; }
+
+    public boolean isShared() { return shared;}
+
+    public void setShared(boolean shared) { this.shared = shared; }
 
 
 
