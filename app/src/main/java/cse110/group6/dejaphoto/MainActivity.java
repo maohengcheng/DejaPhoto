@@ -64,7 +64,9 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.graphics.BitmapFactory.decodeFile;
 import static cse110.group6.dejaphoto.R.mipmap.ic_karma;
 import static cse110.group6.dejaphoto.R.mipmap.ic_karma_gray;
+import static cse110.group6.dejaphoto.R.mipmap.ic_notsharing;
 import static cse110.group6.dejaphoto.R.mipmap.ic_release;
+import static cse110.group6.dejaphoto.R.mipmap.ic_sharing;
 import static cse110.group6.dejaphoto.R.mipmap.ic_undo;
 import static java.lang.Boolean.FALSE;
 
@@ -226,7 +228,6 @@ public class MainActivity extends AppCompatActivity {
                     setImageView(imageLoc, imageView, imageFile);
                     setButtons(currPhoto);
                     updateLocationDisplay(currPhoto);
-                    Toast.makeText(MainActivity.this, "Swiped Right", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(MainActivity.this, "No previous image",
                             Toast.LENGTH_SHORT).show();
@@ -247,8 +248,6 @@ public class MainActivity extends AppCompatActivity {
                     setImageView(imageLoc, imageView, imageFile);
                     setButtons(currPhoto);
                     updateLocationDisplay(currPhoto);
-                    Toast.makeText(MainActivity.this, "Swiped Left", Toast.LENGTH_SHORT).show();
-
                 } else {
                     Toast.makeText(MainActivity.this, "No next image",
                             Toast.LENGTH_SHORT).show();
@@ -328,13 +327,8 @@ public class MainActivity extends AppCompatActivity {
         imageLoc = photos.getMostRecentImage();
         if(imageLoc != null) {
             imageFile = new File(imageLoc);
-            setImageView(imageLoc, imageView, imageFile);
             photos.initializePhotos();
-            photoPos = photos.getCursor().getPosition();
-            Photo currPhoto = photos.getPhotos().get(photoPos);
-
-
-
+            setImageView(imageLoc, imageView, imageFile);
 
             // Create listener to get image data from database
             //mDatabaseRef.addValueEventListener(new ValueEventListener() {
@@ -346,6 +340,7 @@ public class MainActivity extends AppCompatActivity {
                             if (imageSnapshot.child("name").getValue(String.class).equals(i.getUriLastPathSegment())){
                                 i.setUriLastPathSegment(imageSnapshot.child("name").getValue(String.class));
                                 i.setKarma(imageSnapshot.child("karma").getValue(Integer.class));
+                                i.setShared(imageSnapshot.child("shared").getValue(boolean.class));
                             }
                         }
                     }
@@ -355,6 +350,8 @@ public class MainActivity extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {}
             });
 
+            photoPos = photos.getCursor().getPosition();
+            Photo currPhoto = photos.getPhotos().get(photoPos);
             setButtons(currPhoto);
             updateLocationDisplay(currPhoto);
         } else {
@@ -569,7 +566,7 @@ public class MainActivity extends AppCompatActivity {
         karmaPhoto.setKarma(currKarma + 1);
 
         TextView karmaview = (TextView) findViewById(R.id.karmaDisplay);
-        karmaview.setText(karmaPhoto.getKarma());
+        karmaview.setText("" + karmaPhoto.getKarma());
 
         //mDatabaseRef.addValueEventListener(new ValueEventListener() {
         mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -617,7 +614,7 @@ public class MainActivity extends AppCompatActivity {
                     "is released", Toast.LENGTH_SHORT).show();
 
             TextView karmaview = (TextView) findViewById(R.id.karmaDisplay);
-            karmaview.setText("Karma: " + releasePhoto.getKarma());
+            karmaview.setText("" + releasePhoto.getKarma());
 
             // Create listener to get images, then update the appropriate images' karma
             //mDatabaseRef.addValueEventListener(new ValueEventListener() {
@@ -644,16 +641,54 @@ public class MainActivity extends AppCompatActivity {
     /* function called when the share button is pressed */
     public void toggleSharePhoto(View view) {
         ImageButton button = (ImageButton) findViewById(R.id.shareButton);
-        button.setImageResource(R.mipmap.ic_notsharing);
+        //button.setImageResource(R.mipmap.ic_notsharing);
+
+        //get current images position in photoalbum
+        photoPos = photos.getCursor().getPosition();
+        final Photo sharePhoto = photos.getPhotos().get(photoPos);
+        // set the photos sharing status
+        sharePhoto.setShared(!sharePhoto.isShared());
+
+        if(sharePhoto.isShared()){
+            button.setImageResource(R.mipmap.ic_sharing);
+            Toast.makeText(this, sharePhoto.getFilePath() + " is now being shared"
+                    , Toast.LENGTH_SHORT).show();
+        }
+        else{
+            button.setImageResource(R.mipmap.ic_notsharing);
+            Toast.makeText(this, sharePhoto.getFilePath() + " is no longer being shared"
+                    , Toast.LENGTH_SHORT).show();
+        }
+
+        // update the photo in the database
+        //mDatabaseRef.addValueEventListener(new ValueEventListener() {
+        mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot imageSnapshot : dataSnapshot.getChildren()) {
+                    if (imageSnapshot.child("name").getValue(String.class).equals(sharePhoto.getUriLastPathSegment())){
+                        Map<String, Object> update = new HashMap<String, Object>();
+                        update.put(sharePhoto.getUriLastPathSegment(), new ImageUpload(sharePhoto.getUriLastPathSegment(),
+                                imageSnapshot.child("url").getValue(String.class), imageSnapshot.child("karma").getValue(Integer.class),
+                                sharePhoto.isShared()));
+                        mDatabaseRef.updateChildren(update);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
     }
 
     /* function to update the karma and release buttons to the correct icon */
     public void setButtons(Photo photo){
         ImageButton karmaButton = (ImageButton) findViewById(R.id.karmaButton);
         ImageButton releaseButton = (ImageButton) findViewById(R.id.releaseButton);
+        ImageButton shareButton = (ImageButton) findViewById(R.id.shareButton);
 
         TextView karmaview = (TextView) findViewById(R.id.karmaDisplay);
-        karmaview.setText("Karma: " + photo.getKarma());
+        karmaview.setText("" + photo.getKarma());
 
         /* set the karma buttona for this picture to the correct icon */
         if (photo.getKarma() > 0){
@@ -673,6 +708,16 @@ public class MainActivity extends AppCompatActivity {
         else{
             releaseButton.setImageResource(ic_release);
             releaseButton.setTag(ic_release);
+        }
+
+        /* set the share button for this picture to the correct icon */
+        if(photo.isShared()){
+            shareButton.setImageResource(ic_sharing);
+            shareButton.setTag(ic_sharing);
+        }
+        else{
+            shareButton.setImageResource(ic_notsharing);
+            shareButton.setTag(ic_notsharing);
         }
     }
 

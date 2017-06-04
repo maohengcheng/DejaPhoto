@@ -30,6 +30,8 @@ public class PhotoAlbum implements Serializable{
     Cursor cursor;
     int filePathIndex;
     Vector<Photo> photos;
+    static String temp = "a";
+
 
 
     /* constructor */
@@ -59,7 +61,10 @@ public class PhotoAlbum implements Serializable{
             Date dateTaken = new Date(cursor.getLong(3) * 1000);
             Uri thisUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "" + cursor.getInt(0));
             //String namer = (cursor.getString(1)).substring(cursor.getString(1).lastIndexOf("/") + 1);
-            photos.add(new Photo(filePath, longitude, latitude, dateTaken, 0, false, true , 0, thisUri.getLastPathSegment()));
+            if(!photos.contains(new Photo(filePath, longitude, latitude, dateTaken, 0, false, true , 0, thisUri.getLastPathSegment())))
+            {
+                photos.add(new Photo(filePath, longitude, latitude, dateTaken, 0, false, true, 0, thisUri.getLastPathSegment()));
+            }
             //System.out.println("id: " + filePath + " date: " + dateTaken + " long: " + longitude + " lat: " + latitude);
             //System.out.println("filepath from photos: " + photos.get(i).getFilePath());
             cursor.moveToNext();
@@ -166,8 +171,12 @@ public class PhotoAlbum implements Serializable{
                 new MediaScannerConnection.OnScanCompletedListener() {
                     @Override
                     public void onScanCompleted(String path, Uri uri) {
-                        Log.i("External Storage", "Scanned " + path + ":");
-                        Log.i("External Storage", "-> uri=" + uri);
+                        Log.i("External Storage", "Scanned " + path);
+                        Log.i("External Storage", "-> uri= " + uri);
+                        final String temp2 = uri.toString();
+                        temp = temp2;
+                        temp = temp.substring(temp.lastIndexOf("/") + 1);
+                        Log.i("Ext:", "temp: " + temp);
                     }
                 });
 

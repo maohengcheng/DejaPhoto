@@ -128,24 +128,13 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        final PhotoAlbum tempAlbum = new PhotoAlbum();
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
             imgUri = data.getData();
 
             try {
                 /*
                 Bitmap bm = MediaStore.Images.Media.getBitmap(getContentResolver(), imgUri);
-
-                /* get phone resolution
-                DisplayMetrics displayMetrics = new DisplayMetrics();
-                WindowManager wm = (WindowManager) getApplicationContext().
-                        getSystemService(Context.WINDOW_SERVICE);
-                wm.getDefaultDisplay().getMetrics(displayMetrics);
-                int screenWidth = displayMetrics.widthPixels;
-                int screenHeight = displayMetrics.heightPixels;
-                Bitmap b2 = Bitmap.createScaledBitmap(bm, screenWidth, screenHeight, false); */
-
-                /* get read external storage permission during runtime to get
-                access to the gallery
                 */
 
                 if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -177,9 +166,49 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                     return;
                 }
 
-                PhotoAlbum.saveToCustomDirectory(this, getApplicationContext(), getContentResolver(),
+                tempAlbum.saveToCustomDirectory(this, getApplicationContext(), getContentResolver(),
                         imgUri, "DejaPhotoCopied");
 
+                if (imgUri !=null) {
+                    final ProgressDialog dialog = new ProgressDialog(this);
+                    dialog.setTitle("Uploading image");
+                    dialog.show();
+                    StorageReference ref = mStorageRef.child(FB_STORAGE_PATH + System.currentTimeMillis() +
+                            "." + getImageExt(imgUri));
+                    //Add file
+                    ref.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            //Dismiss dialog when done
+                            dialog.dismiss();
+                            //Save image info into firebase database
+                            //String uploadId = mDatabaseRef.push().getKey();
+                            String uploadId = tempAlbum.temp;
+                            ImageUpload imageUpload = new ImageUpload(tempAlbum.temp,
+                                    taskSnapshot.getDownloadUrl().toString(), 0, true);
+                            mDatabaseRef.child(uploadId).setValue(imageUpload);
+                            Toast.makeText(getApplicationContext(), "Image uploaded", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    //Dismiss dialog and show an error
+                                    dialog.dismiss();
+                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                    //Show upload progress
+                                    double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                                    dialog.setMessage("Uploaded " + (int)progress+"0");
+                                }
+                            });
+                }else {
+                    Toast.makeText(getApplicationContext(), "Please select an image", Toast.LENGTH_SHORT).show();
+                }
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -187,46 +216,7 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 e.printStackTrace();
             }
 
-            if (imgUri !=null) {
-                final ProgressDialog dialog = new ProgressDialog(this);
-                dialog.setTitle("Uploading image");
-                dialog.show();
-                StorageReference ref = mStorageRef.child(FB_STORAGE_PATH + System.currentTimeMillis() +
-                        "." + getImageExt(imgUri));
-                //Add file
-                ref.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        //Dismiss dialog when done
-                        dialog.dismiss();
-                        Toast.makeText(getApplicationContext(), "Image uploaded", Toast.LENGTH_SHORT).show();
-                        ImageUpload imageUpload = new ImageUpload(imgUri.getLastPathSegment(),
-                                taskSnapshot.getDownloadUrl().toString(), 0, true);
-                        // /Save image info into firebase database
-                        //String uploadId = mDatabaseRef.push().getKey();
-                        String uploadId = imgUri.getLastPathSegment();
-                        mDatabaseRef.child(uploadId).setValue(imageUpload);
-                    }
-                })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                //Dismiss dialog and show an error
-                                dialog.dismiss();
-                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                                //Show upload progress
-                                double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                                dialog.setMessage("Uploaded " + (int)progress+"0");
-                            }
-                        });
-            }else {
-                Toast.makeText(getApplicationContext(), "Please select an image", Toast.LENGTH_SHORT).show();
-            }
+
         }
     }
 
