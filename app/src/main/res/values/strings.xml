@@ -15,9 +15,10 @@
     <string name="own_photos_switch">View Your Photos:</string>
     <string name="friends_photos_switch">View Friends Photos:</string>
     <string name="share_photos_switch">Share Photos:</string>
-    <string name="friends_list_entry">Enter a friend\'s email...</string>
+    <string name="friends_list_entry">Enter a friend\'s email</string>
     <string name="add_friend">Add Friend</string>
     <string name="remove_friend">Remove Friend</string>
+    <string name="location_name_input">Enter a New Location Name</string>
 
     <string-array name="time_entries">
         <item name="10 seconds">10 seconds</item>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+<<<<<<< HEAD
+      <module fileurl="file://$PROJECT_DIR$/Deja-Photo.iml" filepath="$PROJECT_DIR$/Deja-Photo.iml" />
+=======
+>>>>>>> f8ec374de771b734987832c216de1b2e402c946b
+      <module fileurl="file://$PROJECT_DIR$/DejaPhoto.iml" filepath="$PROJECT_DIR$/DejaPhoto.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+    </modules>
+  </component>
+</project>

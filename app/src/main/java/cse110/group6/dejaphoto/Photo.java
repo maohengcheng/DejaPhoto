@@ -14,6 +14,7 @@ import java.util.Date;
 
 public class Photo implements Serializable{
     String filePath;
+    String locationName;
     double longitude;
     double latitude;
     Date dateTaken;
@@ -38,6 +39,7 @@ public class Photo implements Serializable{
         this.shared = shared;
         this.weight = weight;
         this.uriLastPathSegment = uriLastPathSegment;
+        locationName = "";
     }
 
     /* setters */
@@ -65,6 +67,8 @@ public class Photo implements Serializable{
         this.weight = weight;
     }
 
+    public void setLocationName(String locationName) { this.locationName = locationName; }
+
     /* getters */
     public String getFilePath() {
         return filePath;
@@ -81,6 +85,8 @@ public class Photo implements Serializable{
     public Date getDateTaken() {
         return dateTaken;
     }
+
+    public String getLocationName() { return locationName; }
 
     public boolean isReleased() {
         return released;

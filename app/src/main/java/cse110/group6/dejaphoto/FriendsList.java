@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class FriendsList extends AppCompatActivity implements View.OnClickListener {
+public class FriendsList extends AppCompatActivity {
     public static final String FRIENDS_LIST_REFERENCE = "Friends";
 
     EditText friendEntry;
@@ -64,14 +64,6 @@ public class FriendsList extends AppCompatActivity implements View.OnClickListen
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
-
-        friendEntry = (EditText) findViewById(R.id.friendsListEntry);
-        friendEntry.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        friendEntry.setText("");
     }
 
     void addFriend(View v) {

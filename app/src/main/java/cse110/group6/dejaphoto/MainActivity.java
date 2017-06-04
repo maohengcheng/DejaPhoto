@@ -16,6 +16,7 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -32,14 +33,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -263,6 +267,41 @@ public class MainActivity extends AppCompatActivity {
         /*Local Receiver for managing data from services */
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mMessageReceiver, new IntentFilter("intentKey"));
+
+        /* on click listener for changing location name */
+        TextView locationName = (TextView) findViewById(R.id.locationDisplay);
+        final Context c = this;
+
+        locationName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater layoutInflaterAndroid = LayoutInflater.from(c);
+                View mView = layoutInflaterAndroid.inflate(R.layout.location_name_input_dialog, null);
+                AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(c);
+                alertDialogBuilderUserInput.setView(mView);
+
+                final EditText locationNameInput = (EditText) mView.findViewById(R.id.location_name_input);
+                alertDialogBuilderUserInput
+                        .setCancelable(false)
+                        .setPositiveButton("Change", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialogBox, int id) {
+                                Photo currPhoto = photos.getPhotos().get(photos.getCursor().getPosition());
+                                currPhoto.setLocationName(locationNameInput.getText().toString());
+                                updateLocationDisplay(currPhoto);
+                            }
+                        })
+
+                        .setNegativeButton("Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialogBox, int id) {
+                                        dialogBox.cancel();
+                                    }
+                                });
+
+                AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
+                alertDialogAndroid.show();
+            }
+        });
     }
     /* end of onCreate */
 
@@ -639,6 +678,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateLocationDisplay(Photo photo) {
         TextView locationDisplay = (TextView) findViewById(R.id.locationDisplay);
+
+        if(photo.getLocationName() != "") {
+            locationDisplay.setText(photo.getLocationName());
+            return;
+        }
 
         // source: http://stackoverflow.com/questions/6922312/get-location-name-from-fetched-coordinates
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
