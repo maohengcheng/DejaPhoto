@@ -132,16 +132,17 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
             imgUri = data.getData();
 
             try {
+                /*
                 Bitmap bm = MediaStore.Images.Media.getBitmap(getContentResolver(), imgUri);
 
-                /* get phone resolution */
+                /* get phone resolution
                 DisplayMetrics displayMetrics = new DisplayMetrics();
                 WindowManager wm = (WindowManager) getApplicationContext().
                         getSystemService(Context.WINDOW_SERVICE);
                 wm.getDefaultDisplay().getMetrics(displayMetrics);
                 int screenWidth = displayMetrics.widthPixels;
                 int screenHeight = displayMetrics.heightPixels;
-                Bitmap b2 = Bitmap.createScaledBitmap(bm, screenWidth, screenHeight, false);
+                Bitmap b2 = Bitmap.createScaledBitmap(bm, screenWidth, screenHeight, false); */
 
                 /* get read external storage permission during runtime to get
                 access to the gallery
@@ -176,7 +177,8 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                     return;
                 }
 
-                saveToCustomDirectory(b2, "DejaPhotoCopied");
+                PhotoAlbum.saveToCustomDirectory(this, getApplicationContext(), getContentResolver(),
+                        imgUri, "DejaPhotoCopied");
 
 
             } catch (FileNotFoundException e) {
