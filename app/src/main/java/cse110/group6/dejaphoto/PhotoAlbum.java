@@ -117,4 +117,5 @@ public class PhotoAlbum implements Serializable{
     }
 
     public Vector<Photo> getPhotos() { return photos; }
+
 }

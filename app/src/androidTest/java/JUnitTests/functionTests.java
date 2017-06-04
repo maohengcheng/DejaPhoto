@@ -79,19 +79,19 @@ public class functionTests {
 
         /* test that karma is initially false for a photo */
         Photo karmaPhoto = photos.getPhotos().get(photoPos);
-        assertEquals(false, karmaPhoto.isKarma());
+        assertEquals(false, karmaPhoto.getKarma());
 
         ImageButton testButton = (ImageButton) mainActivity.getActivity().findViewById(R.id.karmaButton);
 
         /* test that karma is now true for a photo after a click */
         testButton.performClick();
         karmaPhoto = photos.getPhotos().get(photoPos);
-        assertEquals(true, karmaPhoto.isKarma());
+        assertEquals(true, karmaPhoto.getKarma());
 
         /* test that karma is still true for a photo after another click */
         testButton.performClick();
         karmaPhoto = photos.getPhotos().get(photoPos);
-        assertEquals(true, karmaPhoto.isKarma());
+        assertEquals(true, karmaPhoto.getKarma());
 
         photos = tempPhotos;
     }

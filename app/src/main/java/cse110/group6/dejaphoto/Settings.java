@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
@@ -174,41 +176,8 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                     return;
                 }
 
+                saveToCustomDirectory(b2, "DejaPhotoCopied");
 
-                /* get other album directory and write to it */
-
-                final String dirName = "DejaPhotoCopied";
-                //final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
-                //        (Environment.DIRECTORY_PICTURES), dirName);
-                //content://media/external/images/media
-                final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
-                        (Environment.DIRECTORY_PICTURES), File.separator + dirName);
-
-                //imageRoot.delete();
-                if(!imageRoot.exists())
-                    imageRoot.mkdirs();
-                final File image = new File(imageRoot, File.separator + imgUri.getLastPathSegment());
-                if(image.exists())
-                    image.delete();
-                /*
-                String path = Environment.getExternalStoragePublicDirectory().toString();
-                //File path = Environment.getExternalStoragePublicDirectory();
-                File image = new File(path, "image1.jpg");
-                if (!image.exists()) {
-                    image.mkdirs();
-                }*/
-                //image.createNewFile();
-                OutputStream fOutputStream = new FileOutputStream(image);
-                b2.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream);
-                fOutputStream.flush();
-                fOutputStream.close();
-                System.out.println(image.toString());
-                String realStorage = MediaStore.Images.Media.insertImage(getContentResolver(), image.getAbsolutePath(),
-                        image.getName(), image.getName());
-
-                Toast.makeText(getApplicationContext(),"Made image", Toast.LENGTH_SHORT).show();
-
-                imgUri = Uri.parse(realStorage);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -257,6 +226,39 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 Toast.makeText(getApplicationContext(), "Please select an image", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void saveToCustomDirectory(Bitmap b2, String dirName) throws IOException {
+    /* get other album directory and write to it */
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+        //final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
+        //        (Environment.DIRECTORY_PICTURES), dirName);
+        //content://media/external/images/media
+        final File imageRoot = new File(root, File.separator + dirName);
+
+        //imageRoot.delete();
+        if(!imageRoot.exists()) {
+            imageRoot.mkdirs();
+        }
+        final File image = new File(imageRoot, imgUri.getLastPathSegment() + ".jpg");
+        if(image.exists())
+            image.delete();
+
+        FileOutputStream fOutputStream = new FileOutputStream(image);
+        b2.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream);
+        fOutputStream.flush();
+        fOutputStream.close();
+
+        MediaScannerConnection.scanFile(this, new String[]{image.toString()}, null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+                    @Override
+                    public void onScanCompleted(String path, Uri uri) {
+                        Log.i("External Storage", "Scanned " + path + ":");
+                        Log.i("External Storage", "-> uri=" + uri);
+                    }
+                });
+
+        Toast.makeText(getApplicationContext(),"Image Copied", Toast.LENGTH_SHORT).show();
     }
 
     @Override
