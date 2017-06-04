@@ -19,7 +19,7 @@
     <string name="add_friend">Add Friend</string>
     <string name="remove_friend">Remove Friend</string>
     <string name="location_name_input">Enter a New Location Name</string>
-
+    <string name="initial_karma_count">0</string>
     <string-array name="time_entries">
         <item name="10 seconds">10 seconds</item>
         <item name="15 seconds">15 seconds</item>

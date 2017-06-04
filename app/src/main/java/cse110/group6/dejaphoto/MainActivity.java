@@ -569,7 +569,7 @@ public class MainActivity extends AppCompatActivity {
         karmaPhoto.setKarma(currKarma + 1);
 
         TextView karmaview = (TextView) findViewById(R.id.karmaDisplay);
-        karmaview.setText("Karma: " + karmaPhoto.getKarma());
+        karmaview.setText(karmaPhoto.getKarma());
 
         //mDatabaseRef.addValueEventListener(new ValueEventListener() {
         mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
