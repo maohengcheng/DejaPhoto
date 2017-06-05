@@ -220,8 +220,9 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
         }
     }
 
+    /*
     public void saveToCustomDirectory(Bitmap b2, String dirName) throws IOException {
-    /* get other album directory and write to it */
+    /* get other album directory and write to it
         String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
         //final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
         //        (Environment.DIRECTORY_PICTURES), dirName);
@@ -251,7 +252,7 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
                 });
 
         Toast.makeText(getApplicationContext(),"Image Copied", Toast.LENGTH_SHORT).show();
-    }
+    } */
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {

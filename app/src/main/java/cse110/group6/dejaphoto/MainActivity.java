@@ -79,6 +79,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String FB_STORAGE_PATH = "image/";
     public static final String FB_DATABASE_PATH = "image/";
     public static final String IMAGE_FOLDER_REF = "Images";
+    public static final String FRIENDS_FOLDER_REF = "Friends";
 
     public static final int REQUEST_CODE = 420;
     private Uri imgUri;
@@ -117,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference mStorageRef;
     FirebaseUser user;
     private DatabaseReference mDatabaseRef;
+    private DatabaseReference fDatabaseRef;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -155,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         mStorageRef = FirebaseStorage.getInstance().getReference();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getUid() + "/" + IMAGE_FOLDER_REF);
+        fDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getUid() + "/" + FRIENDS_FOLDER_REF);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -308,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         //selection=MediaStore.Video.Media.DATA +" like?";
         selection=MediaStore.Images.Media.DATA +" like?";
         //selectionArgs=new String[]{"%DejaPhotoCopied%"};
@@ -348,6 +353,55 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {}
+            });
+            final Context context = this;
+            fDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for(DataSnapshot friendSnapshot : dataSnapshot.getChildren()) {
+                        DatabaseReference fPhotoDatabase = FirebaseDatabase.getInstance().getReference("vOgpj0ijffgnbgi4H8j3cvvroOw1" + "/" + IMAGE_FOLDER_REF);
+                        fPhotoDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for(DataSnapshot imageSnapshot : dataSnapshot.getChildren()) {
+                                    if(imageSnapshot.child("shared").getValue(Boolean.class) == true) {
+                                        String imgUrl = imageSnapshot.child("url").getValue(String.class);
+                                        StorageReference httpsRef = FirebaseStorage.getInstance().getReferenceFromUrl(imgUrl);
+                                        try {
+                                            final File localFile = File.createTempFile("images", "jpg");
+                                            httpsRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                                @Override
+                                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                                    Uri localUri = Uri.fromFile(localFile);
+                                                    try {
+                                                        PhotoAlbum.saveToCustomDirectory(context, getApplicationContext(), getContentResolver(),
+                                                                localUri, "DejaPhotoFriends");
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
+                                                    }
+
+                                                }
+                                            });
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
             });
 
             photoPos = photos.getCursor().getPosition();

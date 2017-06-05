@@ -139,7 +139,7 @@ public class PhotoAlbum implements Serializable{
                                       Uri imgUri, String dirName) throws IOException {
         Bitmap bm = MediaStore.Images.Media.getBitmap(resolver, imgUri);
 
-                /* get phone resolution */
+        /* get phone resolution */
         DisplayMetrics displayMetrics = new DisplayMetrics();
         WindowManager wm = (WindowManager) appContext.
                 getSystemService(Context.WINDOW_SERVICE);
