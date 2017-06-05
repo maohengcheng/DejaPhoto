@@ -305,6 +305,59 @@ public class MainActivity extends AppCompatActivity {
                 alertDialogAndroid.show();
             }
         });
+
+        /* Get photos from Friends */
+        final Context context = this;
+        //PhotoAlbum.deleteFolder(context, "DejaPhotoFriends");
+        fDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot friendSnapshot : dataSnapshot.getChildren()) {
+                    String friendsEmail = friendSnapshot.getValue().toString();
+                    DatabaseReference fPhotoDatabase = FirebaseDatabase.getInstance().getReference("vOgpj0ijffgnbgi4H8j3cvvroOw1" + "/" + IMAGE_FOLDER_REF);
+                    fPhotoDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for(DataSnapshot imageSnapshot : dataSnapshot.getChildren()) {
+                                if(imageSnapshot.child("shared").getValue(Boolean.class) == true) {
+                                    String imgUrl = imageSnapshot.child("url").getValue(String.class);
+                                    StorageReference httpsRef = FirebaseStorage.getInstance().getReferenceFromUrl(imgUrl);
+                                    try {
+                                        final File localFile = File.createTempFile("images", "jpg");
+                                        httpsRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                            @Override
+                                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                                Uri localUri = Uri.fromFile(localFile);
+                                                try {
+                                                    PhotoAlbum.saveToCustomDirectory(context, getApplicationContext(), getContentResolver(),
+                                                            localUri, "DejaPhotoFriends");
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+
+                                            }
+                                        });
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
     /* end of onCreate */
 
@@ -314,9 +367,9 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         //selection=MediaStore.Video.Media.DATA +" like?";
-        selection=MediaStore.Images.Media.DATA +" like?";
+        selection = MediaStore.Images.Media.DATA +" like?" + " OR " + MediaStore.Images.Media.DATA +" like?";
         //selectionArgs=new String[]{"%DejaPhotoCopied%"};
-        selectionArgs=new String[]{"%DejaPhotoCopied%"};
+        selectionArgs=new String[]{"%DejaPhotoCopied%", "%DejaPhotoFriends%"};
 
         /*
         photos.setCursor(getContentResolver().
@@ -331,87 +384,45 @@ public class MainActivity extends AppCompatActivity {
 
         imageLoc = photos.getMostRecentImage();
         if(imageLoc != null) {
-            imageFile = new File(imageLoc);
-            photos.initializePhotos();
-            setImageView(imageLoc, imageView, imageFile);
+            setView();
+        } else {
 
-            // Create listener to get image data from database
-            //mDatabaseRef.addValueEventListener(new ValueEventListener() {
-            mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for(Photo i : photos.photos) {
-                        for (DataSnapshot imageSnapshot : dataSnapshot.getChildren()) {
-                            if (imageSnapshot.child("name").getValue(String.class).equals(i.getUriLastPathSegment())){
-                                i.setUriLastPathSegment(imageSnapshot.child("name").getValue(String.class));
-                                i.setKarma(imageSnapshot.child("karma").getValue(Integer.class));
-                                i.setShared(imageSnapshot.child("shared").getValue(boolean.class));
-                            }
+            Toast.makeText(this, "No image. Please select an image", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void setView() {
+        imageFile = new File(imageLoc);
+        photos.initializePhotos();
+        setImageView(imageLoc, imageView, imageFile);
+
+        // Create listener to get image data from database
+        //mDatabaseRef.addValueEventListener(new ValueEventListener() {
+        mDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(Photo i : photos.photos) {
+                    for (DataSnapshot imageSnapshot : dataSnapshot.getChildren()) {
+                        if (imageSnapshot.child("name").getValue(String.class).equals(i.getUriLastPathSegment())){
+                            i.setUriLastPathSegment(imageSnapshot.child("name").getValue(String.class));
+                            i.setKarma(imageSnapshot.child("karma").getValue(Integer.class));
+                            i.setShared(imageSnapshot.child("shared").getValue(boolean.class));
                         }
                     }
                 }
+            }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            });
-            final Context context = this;
-            fDatabaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for(DataSnapshot friendSnapshot : dataSnapshot.getChildren()) {
-                        DatabaseReference fPhotoDatabase = FirebaseDatabase.getInstance().getReference("vOgpj0ijffgnbgi4H8j3cvvroOw1" + "/" + IMAGE_FOLDER_REF);
-                        fPhotoDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                for(DataSnapshot imageSnapshot : dataSnapshot.getChildren()) {
-                                    if(imageSnapshot.child("shared").getValue(Boolean.class) == true) {
-                                        String imgUrl = imageSnapshot.child("url").getValue(String.class);
-                                        StorageReference httpsRef = FirebaseStorage.getInstance().getReferenceFromUrl(imgUrl);
-                                        try {
-                                            final File localFile = File.createTempFile("images", "jpg");
-                                            httpsRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                                @Override
-                                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                                    Uri localUri = Uri.fromFile(localFile);
-                                                    try {
-                                                        PhotoAlbum.saveToCustomDirectory(context, getApplicationContext(), getContentResolver(),
-                                                                localUri, "DejaPhotoFriends");
-                                                    } catch (IOException e) {
-                                                        e.printStackTrace();
-                                                    }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
 
-                                                }
-                                            });
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-            photoPos = photos.getCursor().getPosition();
-            Photo currPhoto = photos.getPhotos().get(photoPos);
-            setButtons(currPhoto);
-            updateLocationDisplay(currPhoto);
-        } else {
-            Toast.makeText(this, "No image. Please select an image", Toast.LENGTH_SHORT).show();
-        }
+        photoPos = photos.getCursor().getPosition();
+        Photo currPhoto = photos.getPhotos().get(photoPos);
+        setButtons(currPhoto);
+        updateLocationDisplay(currPhoto);
     }
+
     @Override
     protected void onRestart() {
         super.onRestart();

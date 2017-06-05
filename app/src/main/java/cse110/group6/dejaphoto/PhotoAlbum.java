@@ -135,6 +135,33 @@ public class PhotoAlbum implements Serializable{
 
     public Vector<Photo> getPhotos() { return photos; }
 
+    public static void deleteFolder(final Context context, String dirName) {
+        final File imageRoot = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString(),
+                            File.separator + dirName);
+        if(imageRoot.isDirectory()) {
+            String[] files = imageRoot.list();
+            for(int i = 0; i < files.length; i++) {
+
+                MediaScannerConnection.scanFile(context, new String[]{Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() +
+                        File.separator + dirName + File.separator + files[i]}, null, new MediaScannerConnection.OnScanCompletedListener() {
+
+                    @Override
+                    public void onScanCompleted(String path, Uri uri) {
+                        if(uri != null) {
+                            context.getContentResolver().delete(uri, null, null);
+                        }
+                        imageRoot.delete();
+                    }
+                });
+                new File(imageRoot, files[i]).delete();
+            }
+        }
+
+
+
+
+    }
+
     public static void saveToCustomDirectory(Context context, Context appContext, ContentResolver resolver,
                                       Uri imgUri, String dirName) throws IOException {
         Bitmap bm = MediaStore.Images.Media.getBitmap(resolver, imgUri);
