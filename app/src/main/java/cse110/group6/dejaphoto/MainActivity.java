@@ -87,6 +87,7 @@ import com.google.firebase.storage.UploadTask;
 
 public class MainActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE = 20;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static int RESULT_LOAD_IMG = 1;
     private static int RESULT_SETTINGS = 2;
     private ImageView imageView;
@@ -259,6 +260,10 @@ public class MainActivity extends AppCompatActivity {
                     imageLoc = photos.getImage(photos.getCursor().getPosition());
                 }
             }
+
+            public void onSwipeTop() {
+                dispatchTakePictureIntent();
+            }
         };
         /* run the swipeListener on a separate thread */
         new Thread() {
@@ -421,6 +426,13 @@ public class MainActivity extends AppCompatActivity {
         Photo currPhoto = photos.getPhotos().get(photoPos);
         setButtons(currPhoto);
         updateLocationDisplay(currPhoto);
+    }
+
+    private void dispatchTakePictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
     }
 
     @Override
