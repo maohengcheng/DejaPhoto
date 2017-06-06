@@ -51,4 +51,11 @@
                 android:text="@string/action_launch_app"
                 android:textStyle="bold"/>
 
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:src="@mipmap/ic_launcher"
+                android:layout_marginTop="16dp"
+                android:layout_gravity="center"/>
+
 </LinearLayout>
