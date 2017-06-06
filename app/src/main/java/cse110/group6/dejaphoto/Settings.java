@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -27,10 +28,12 @@ import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +64,21 @@ import com.google.firebase.storage.UploadTask;
 
 
 public class Settings extends AppCompatActivity implements OnItemSelectedListener {
+    public static final String FB_STORAGE_PATH = "image/";
+    public static final String FB_DATABASE_PATH = "image/";
+    public static final String IMAGE_FOLDER_REF = "Images";
+    public static final String SETTINGS_PREF = "Settings Preferences";
+
+    public static final String YOUR_PHOTOS_KEY = "View Your Photos";
+    public static final String FRIENDS_PHOTOS_KEY = "View Friends Photos";
+    public static final String SHARE_PHOTOS_KEY = "Share Photos";
+
+    public static final String LOCATION_KEY = "Use Location";
+    public static final String DOW_KEY = "Use Day of Week";
+    public static final String TOD_KEY = "Use Time of Day";
+    public static final String RECENT_KEY = "Use Recent Photos";
+    public static final String KARMA_KEY = "Use Karma";
+
     Spinner spinnerDialog;
     ArrayAdapter adapter;
 
@@ -71,9 +89,9 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
     private static final int MY_PERMISSIONS_REQUEST_READ_EXT_STORAGE = 20;
     public static final int REQUEST_CODE = 420;
     private Uri imgUri;
-    public static final String FB_STORAGE_PATH = "image/";
-    public static final String FB_DATABASE_PATH = "image/";
-    public static final String IMAGE_FOLDER_REF = "Images";
+
+    SharedPreferences settingsFile;
+    SharedPreferences.Editor settingsEditor;
 
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
@@ -93,6 +111,92 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
         mStorageRef = FirebaseStorage.getInstance().getReference();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getDisplayName() + "/" + IMAGE_FOLDER_REF);
+
+        settingsFile = getSharedPreferences(SETTINGS_PREF, 0);
+        settingsEditor = settingsFile.edit();
+
+        Switch viewYourPhotosState = (Switch) findViewById(R.id.ownPhotosSwitch);
+        viewYourPhotosState.setChecked(settingsFile.getBoolean(YOUR_PHOTOS_KEY, true));
+        viewYourPhotosState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                settingsEditor.putBoolean(YOUR_PHOTOS_KEY, isChecked);
+                settingsEditor.commit();
+            }
+        });
+
+        Switch viewFriendsPhotosState = (Switch) findViewById(R.id.friendsPhotosSwitch);
+        viewFriendsPhotosState.setChecked(settingsFile.getBoolean(FRIENDS_PHOTOS_KEY, true));
+        viewFriendsPhotosState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                settingsEditor.putBoolean(FRIENDS_PHOTOS_KEY, isChecked);
+                settingsEditor.commit();
+            }
+        });
+
+        Switch sharePhotosState = (Switch) findViewById(R.id.sharePhotosSwitch);
+        sharePhotosState.setChecked(settingsFile.getBoolean(SHARE_PHOTOS_KEY, true));
+        sharePhotosState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                settingsEditor.putBoolean(SHARE_PHOTOS_KEY, isChecked);
+                settingsEditor.commit();
+            }
+        });
+
+        Switch locationState = (Switch) findViewById(R.id.locationSwitch);
+        locationState.setChecked(settingsFile.getBoolean(LOCATION_KEY, true));
+        locationState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                settingsEditor.putBoolean(LOCATION_KEY, isChecked);
+                settingsEditor.commit();
+            }
+        });
+
+
+        Switch dayOfWeekState = (Switch) findViewById(R.id.dowSwitch);
+        dayOfWeekState.setChecked(settingsFile.getBoolean(DOW_KEY, true));
+        dayOfWeekState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
+                settingsEditor.putBoolean(DOW_KEY, isChecked);
+                settingsEditor.commit();
+            }
+        });
+
+
+        Switch timeOfDayState = (Switch) findViewById(R.id.todSwitch);
+        timeOfDayState.setChecked(settingsFile.getBoolean(TOD_KEY, true));
+        timeOfDayState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                settingsEditor.putBoolean(TOD_KEY, isChecked);
+                settingsEditor.commit();
+            }
+        });
+
+        Switch recentState = (Switch) findViewById(R.id.recentSwitch);
+        recentState.setChecked(settingsFile.getBoolean(RECENT_KEY, true));
+        recentState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                settingsEditor.putBoolean(RECENT_KEY, isChecked);
+                settingsEditor.commit();
+            }
+        });
+
+
+        Switch karmaState = (Switch) findViewById(R.id.karmaSwitch);
+        karmaState.setChecked(settingsFile.getBoolean(KARMA_KEY, true));
+        karmaState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                settingsEditor.putBoolean(KARMA_KEY, isChecked);
+                settingsEditor.commit();
+            }
+        });
     }
 
     @Override
@@ -282,6 +386,4 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select image"), REQUEST_CODE);
     }
-
-
 }

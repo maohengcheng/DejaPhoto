@@ -6,6 +6,7 @@ import android.app.Service;
 import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -91,7 +92,7 @@ public class BackgroundService extends Service {
         interval = intent.getLongExtra("Interval",0);
 
 
-        /* get the images filepath and then set the background */
+        /* get the images fileath and then set the background */
         String filePath = intent.getStringExtra("filepath");
         Bitmap bitmap = decodeFile(filePath);
         File imageFile = new File(filePath);
@@ -193,8 +194,9 @@ public class BackgroundService extends Service {
         photos = photoAlbumCopy.toArray(photos);
 
         // Calculate current weight
+        SharedPreferences settingsFile = getSharedPreferences(Settings.SETTINGS_PREF, 0);
         for (Photo photo : photos)
-            photo.calcWeight(currLocation);
+            photo.calcWeight(currLocation, settingsFile);
 
         setBackground(choosePhoto(photos).getFilePath());
 

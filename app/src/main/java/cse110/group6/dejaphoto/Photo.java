@@ -1,6 +1,7 @@
 package cse110.group6.dejaphoto;
 
 
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.Uri;
 
@@ -109,54 +110,66 @@ public class Photo implements Serializable{
 
 
     // Recalculates weight for current status
-    void calcWeight(Location location) {
+    void calcWeight(Location location, SharedPreferences options) {
         Calendar calendar = Calendar.getInstance();
         int currDay = calendar.get(Calendar.DAY_OF_WEEK) - 1; // Date class is 0-indexed, Calendar is 1-indexed
         int currHour = calendar.get(Calendar.HOUR_OF_DAY);
         long currTime = calendar.getTime().getTime();
 
         weight = 0;
-        float[] result = new float[1];
-        Location.distanceBetween(this.latitude, this.longitude, location.getLatitude(), location.getLongitude(), result);
-        float radius = result[0];
+
 
         //location
-        if(radius < 500)
-            weight += 100;
-        else if(radius < 2000){
-            weight += 50;
-        }else if(radius < 5000){
-            weight += 25;
+        if(options.getBoolean(Settings.LOCATION_KEY, true)) {
+            float[] result = new float[1];
+            Location.distanceBetween(this.latitude, this.longitude, location.getLatitude(), location.getLongitude(), result);
+            float radius = result[0];
+
+            if (radius < 500)
+                weight += 100;
+            else if (radius < 2000) {
+                weight += 50;
+            } else if (radius < 5000) {
+                weight += 25;
+            }
         }
 
         //karma
-        if(karma > 0){
-            weight += 75;
+        if(options.getBoolean(Settings.KARMA_KEY, true)) {
+
+            if (karma > 0) {
+                weight += 75;
+            }
         }
 
         //recency
-        long photoTimeTaken = dateTaken.getTime();
-        if(currTime - photoTimeTaken < millisecondsInDay){
-            weight += 50;
-        }else if(currTime - photoTimeTaken < millisecondsInWeek){
-            weight += 20;
-        }else if(currTime - photoTimeTaken < millisecondsInMonth){
-            weight += 10;
+        if(options.getBoolean(Settings.RECENT_KEY, true)) {
+            long photoTimeTaken = dateTaken.getTime();
+            if (currTime - photoTimeTaken < millisecondsInDay) {
+                weight += 50;
+            } else if (currTime - photoTimeTaken < millisecondsInWeek) {
+                weight += 20;
+            } else if (currTime - photoTimeTaken < millisecondsInMonth) {
+                weight += 10;
+            }
         }
 
-
         //day
-        int photoDayOfWeek = dateTaken.getDay();
-        if(currDay == photoDayOfWeek)
-            weight += 25;
+        if(options.getBoolean(Settings.DOW_KEY, true)) {
+            int photoDayOfWeek = dateTaken.getDay();
+            if (currDay == photoDayOfWeek)
+                weight += 25;
+        }
 
         //time
-        int photoHourOfDay = dateTaken.getHours();
-        int diffTime = Math.abs(photoHourOfDay - currHour);
-        if(diffTime == 0)
-            weight += 25;
-        if(diffTime < 3 || diffTime > 21)
-            weight += 15;
+        if(options.getBoolean(Settings.TOD_KEY, true)) {
+            int photoHourOfDay = dateTaken.getHours();
+            int diffTime = Math.abs(photoHourOfDay - currHour);
+            if (diffTime == 0)
+                weight += 25;
+            if (diffTime < 3 || diffTime > 21)
+                weight += 15;
+        }
     }
 
     // Accessor method for weight
