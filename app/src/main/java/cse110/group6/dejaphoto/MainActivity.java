@@ -426,7 +426,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        stopService(otherIntent);
+        if(otherIntent != null)
+            stopService(otherIntent);
     }
 
     /* the app, upon losing focus and not being on phone's foreground anymore,
