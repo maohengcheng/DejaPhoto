@@ -157,8 +157,8 @@ public class MainActivity extends AppCompatActivity {
         /* get the firebase database references */
         mStorageRef = FirebaseStorage.getInstance().getReference();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getUid() + "/" + IMAGE_FOLDER_REF);
-        fDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getUid() + "/" + FRIENDS_FOLDER_REF);
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getDisplayName() + "/" + IMAGE_FOLDER_REF);
+        fDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getDisplayName() + "/" + FriendsList.FRIENDS_LIST_REFERENCE);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

@@ -13,11 +13,10 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 /**
- * Created by RaiJin on 5/30/2017.
+ * Created by RaiJin on 5/30/2017. <- thanks RaiJin for the copy pasta!!!
  */
 
 public class AuthActivity extends AppCompatActivity{
@@ -26,7 +25,7 @@ public class AuthActivity extends AppCompatActivity{
 
     //UI References
     private EditText mEmail, mPassword;
-    private Button btnSignIn, btnSignOut, btnUploadImage;
+    private Button btnSignIn, btnSignOut, btnLaunchApp;
     private Boolean valid_user = false;
 
     private FirebaseAuth mAuth;
@@ -44,7 +43,7 @@ public class AuthActivity extends AppCompatActivity{
         mPassword = (EditText) findViewById(R.id.password);
         btnSignIn = (Button) findViewById(R.id.email_sign_in_button);
         btnSignOut = (Button) findViewById(R.id.email_sign_out_button);
-        btnUploadImage = (Button) findViewById(R.id.upload_image);
+        btnLaunchApp = (Button) findViewById(R.id.launch_app);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -57,6 +56,13 @@ public class AuthActivity extends AppCompatActivity{
 
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+
+                    // Set display name
+                    UserProfileChangeRequest.Builder displayName = new UserProfileChangeRequest.Builder();
+                    String accountName = user.getEmail();
+                    displayName.setDisplayName(accountName.substring(0, accountName.lastIndexOf("@")));
+                    user.updateProfile(displayName.build());
+
                     toastMessages("Successfully signed in with: " + user.getEmail());
                     valid_user = true;
                 } else {
@@ -95,7 +101,7 @@ public class AuthActivity extends AppCompatActivity{
             }
         });
 
-        btnUploadImage.setOnClickListener(new View.OnClickListener() {
+        btnLaunchApp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (valid_user == true){

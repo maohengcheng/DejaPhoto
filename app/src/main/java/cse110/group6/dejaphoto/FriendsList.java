@@ -37,7 +37,7 @@ public class FriendsList extends AppCompatActivity {
         getSupportActionBar().setTitle("Friends List");
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getUid() + "/" + FRIENDS_LIST_REFERENCE);
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getDisplayName() + "/" + FRIENDS_LIST_REFERENCE);
         friendEntry = (EditText) findViewById(R.id.friendsListEntry);
 
         // Create listener to get friend list from database

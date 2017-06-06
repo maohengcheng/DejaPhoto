@@ -92,8 +92,7 @@ public class Settings extends AppCompatActivity implements OnItemSelectedListene
 
         mStorageRef = FirebaseStorage.getInstance().getReference();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        //mDatabaseRef = FirebaseDatabase.getInstance().getReference(FB_DATABASE_PATH);
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getUid() + "/" + IMAGE_FOLDER_REF);
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference(user.getDisplayName() + "/" + IMAGE_FOLDER_REF);
     }
 
     @Override
