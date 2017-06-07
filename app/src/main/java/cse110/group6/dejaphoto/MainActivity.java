@@ -24,6 +24,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,11 +33,13 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
@@ -55,6 +58,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -103,13 +108,14 @@ public class MainActivity extends AppCompatActivity {
     SwipeListener swipeListener;
     Bitmap bitmap;
     File imageFile;
+    Uri imageUri;
     public static long backgroundInterval = 10000; //10seconds default
     Intent otherIntent;
     public static final String FB_STORAGE_PATH = "image/";
     public static final String FB_DATABASE_PATH = "image/";
     public static final String IMAGE_FOLDER_REF = "Images";
     public static final String FRIENDS_FOLDER_REF = "Friends";
-
+    static String temp = "a";
     public static final int REQUEST_CODE = 420;
     private Uri imgUri;
     String dirName;
@@ -319,7 +325,9 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot friendSnapshot : dataSnapshot.getChildren()) {
                     String friendsEmail = friendSnapshot.getValue().toString();
-                    DatabaseReference fPhotoDatabase = FirebaseDatabase.getInstance().getReference("vOgpj0ijffgnbgi4H8j3cvvroOw1" + "/" + IMAGE_FOLDER_REF);
+                    String friendsRef = friendsEmail.substring(0, friendsEmail.lastIndexOf("@"));
+                    Toast.makeText(getApplicationContext(), friendsRef, Toast.LENGTH_LONG).show();
+                    DatabaseReference fPhotoDatabase = FirebaseDatabase.getInstance().getReference(friendsRef + "/" + IMAGE_FOLDER_REF);
                     fPhotoDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -429,10 +437,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void dispatchTakePictureIntent() {
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES + "/DejaPhoto");
+        if(!storageDir.exists())
+            storageDir.mkdirs();
+        File image = File.createTempFile(
+                imageFileName,
+                ".jpg",
+                storageDir
+        );
+        imageUri = Uri.fromFile(image);
+        return image;
     }
 
     @Override
@@ -561,18 +585,48 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
-            /*if(requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
-                    && data != null) {
+            if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
 
-                //* get image data with a uri *//*
-                Uri photoUri = data.getData();
-                //* get actual image from uri *//*
-                photos.setCursor(getContentResolver().query(photoUri,
-                        photos.getImages(), null, null, null));
-                imageLoc = photos.getMostRecentImage();
-                File imageFile = new File(imageLoc);
-                setImageView(imageLoc, imageView, imageFile);
-            }*/
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                String imageFileName = "JPEG_" + timeStamp + "_";
+
+                Bitmap b2 = Bitmap.createScaledBitmap(imageBitmap, screenWidth, screenHeight, false);
+    /* get other album directory and write to it */
+                String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+                //final File imageRoot = new File(Environment.getExternalStoragePublicDirectory
+                //        (Environment.DIRECTORY_PICTURES), dirName);
+                //content://media/external/images/media
+                final File imageRoot = new File(root, File.separator + "DejaPhoto");
+
+                //imageRoot.delete();
+                if(!imageRoot.exists()) {
+                    imageRoot.mkdirs();
+                }
+
+                final File image = new File(imageRoot, imageFileName + ".jpg");
+                if(image.exists())
+                    image.delete();
+
+                FileOutputStream fOutputStream = new FileOutputStream(image);
+                b2.compress(Bitmap.CompressFormat.JPEG, 100, fOutputStream);
+                fOutputStream.flush();
+                fOutputStream.close();
+
+                MediaScannerConnection.scanFile(this, new String[]{image.toString()}, null,
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            @Override
+                            public void onScanCompleted(String path, Uri uri) {
+                                Log.i("External Storage", "Scanned " + path);
+                                Log.i("External Storage", "-> uri= " + uri);
+                                final String temp2 = uri.toString();
+                                temp = temp2;
+                                temp = temp.substring(temp.lastIndexOf("/") + 1);
+                                Log.i("Ext:", "temp: " + temp);
+                            }
+                        });
+            }
             if(requestCode == RESULT_SETTINGS && resultCode == RESULT_OK) {
                 backgroundInterval = data.getLongExtra("newtime", backgroundInterval);
                 String backgroundIntervalString = Long.toString((backgroundInterval));
@@ -626,8 +680,12 @@ public class MainActivity extends AppCompatActivity {
             // Get extra data included in the Intent
             String message = intent.getStringExtra("key");
             String imagePath = intent.getStringExtra("currPath");
-            File imageFile = new File(imagePath);
-            setImageView(imagePath, imageView, imageFile);
+            File imageFile;
+            if(imagePath != null) {
+                imageFile = new File(imagePath);
+                setImageView(imagePath, imageView, imageFile);
+            }
+
         }
     };
 
