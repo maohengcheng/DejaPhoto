@@ -23,7 +23,9 @@ import cse110.group6.dejaphoto.R;
 import static cse110.group6.dejaphoto.R.id.karmaButton;
 import static cse110.group6.dejaphoto.R.mipmap.ic_karma;
 import static cse110.group6.dejaphoto.R.mipmap.ic_karma_gray;
+import static cse110.group6.dejaphoto.R.mipmap.ic_notsharing;
 import static cse110.group6.dejaphoto.R.mipmap.ic_release;
+import static cse110.group6.dejaphoto.R.mipmap.ic_sharing;
 import static cse110.group6.dejaphoto.R.mipmap.ic_undo;
 import static junit.framework.Assert.assertEquals;
 
@@ -79,19 +81,20 @@ public class functionTests {
 
         /* test that karma is initially false for a photo */
         Photo karmaPhoto = photos.getPhotos().get(photoPos);
-        assertEquals(false, karmaPhoto.getKarma());
+        karmaPhoto.setKarma(0);
+        assertEquals(0, karmaPhoto.getKarma());
 
         ImageButton testButton = (ImageButton) mainActivity.getActivity().findViewById(R.id.karmaButton);
 
         /* test that karma is now true for a photo after a click */
         testButton.performClick();
         karmaPhoto = photos.getPhotos().get(photoPos);
-        assertEquals(true, karmaPhoto.getKarma());
+        assertEquals(1, karmaPhoto.getKarma());
 
         /* test that karma is still true for a photo after another click */
         testButton.performClick();
         karmaPhoto = photos.getPhotos().get(photoPos);
-        assertEquals(true, karmaPhoto.getKarma());
+        assertEquals(2, karmaPhoto.getKarma());
 
         photos = tempPhotos;
     }
@@ -126,42 +129,78 @@ public class functionTests {
 
     @UiThreadTest
     @Test
+    public void toggleSharePhotoTest() {
+        PhotoAlbum tempPhotos = photos;
+        photos = mainActivity.getActivity().getPhotos();
+        int photoPos = photos.getCursor().getPosition();
+
+        /* test that shared is initially true for a photo */
+        Photo sharePhoto = photos.getPhotos().get(photoPos);
+        assertEquals(true, sharePhoto.isShared());
+
+        ImageButton testButton = (ImageButton) mainActivity.getActivity().findViewById(R.id.shareButton);
+
+        /* test that after a click, the photo is no longer shared */
+        testButton.performClick();
+        sharePhoto = photos.getPhotos().get(photoPos);
+        assertEquals(false, sharePhoto.isShared());
+
+        /* test that after another click, the photo is shared again */
+        testButton.performClick();
+        sharePhoto = photos.getPhotos().get(photoPos);
+        assertEquals(true, sharePhoto.isShared());
+
+        photos = tempPhotos;
+    }
+
+    @UiThreadTest
+    @Test
     public void setButtonsTest(){
         ImageButton karmaButton = (ImageButton) mainActivity.getActivity().findViewById(R.id.karmaButton);
         ImageButton releaseButton = (ImageButton) mainActivity.getActivity().findViewById(R.id.releaseButton);
+        ImageButton shareButton = (ImageButton) mainActivity.getActivity().findViewById(R.id.shareButton);
 
-        /* photo is initially not karmad and not released.
-            buttons should initially be karma_gray and release icons.
+        /* photo is initially not karmad, not released, and shared.
+            buttons should initially be karma_gray, not released, and shared icons.
         */
         PhotoAlbum tempPhotos = photos;
         photos = mainActivity.getActivity().getPhotos();
         int photoPos = photos.getCursor().getPosition();
 
-        /* test that karma is initially false for a photo */
+        /* test that karma is initially false for a photo,
+            release button should be release icon,
+            and share button is initially shared icon
+         */
         Photo karmaPhoto = photos.getPhotos().get(photoPos);
         karmaButton.setTag(ic_karma_gray);
         releaseButton.setTag(ic_release);
+        shareButton.setTag(ic_sharing);
         mainActivity.getActivity().setButtons(karmaPhoto);
         assertEquals(ic_karma_gray, (int)karmaButton.getTag());
         assertEquals(ic_release, (int)releaseButton.getTag());
+        assertEquals(ic_sharing, (int)shareButton.getTag());
 
         /* the photo is now karmad and released.
-            buttons should now be karma and undo icons.
+            buttons should now be karma gray, undo, and not shared icons.
          */
         karmaButton.performClick();
         releaseButton.performClick();
+        shareButton.performClick();
         mainActivity.getActivity().setButtons(karmaPhoto);
-        assertEquals(ic_karma, (int)karmaButton.getTag());
+        assertEquals(ic_karma_gray, (int)karmaButton.getTag());
         assertEquals(ic_undo, (int)releaseButton.getTag());
+        assertEquals(ic_notsharing, (int)shareButton.getTag());
 
         /* the photo is now karmad and not released.
-            buttons should now be karma and release icons.
+            buttons should now be karma, release, and shared icons.
          */
         karmaButton.performClick();
         releaseButton.performClick();
+        shareButton.performClick();
         mainActivity.getActivity().setButtons(karmaPhoto);
         assertEquals(ic_karma, (int)karmaButton.getTag());
         assertEquals(ic_release, (int)releaseButton.getTag());
+        assertEquals(ic_sharing, (int)shareButton.getTag());
     }
 
     @UiThreadTest
