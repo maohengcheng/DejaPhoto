@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
     Bitmap bitmap;
     File imageFile;
     Uri imageUri;
-    public static long backgroundInterval = 10000; //10seconds default
+    public static long backgroundInterval = 5000; //10seconds default
     Intent otherIntent;
     public static final String FB_STORAGE_PATH = "image/";
     public static final String FB_DATABASE_PATH = "image/";
@@ -630,7 +630,7 @@ public class MainActivity extends AppCompatActivity {
             if(requestCode == RESULT_SETTINGS && resultCode == RESULT_OK) {
                 backgroundInterval = data.getLongExtra("newtime", backgroundInterval);
                 String backgroundIntervalString = Long.toString((backgroundInterval));
-                Toast.makeText(this, backgroundIntervalString, Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, backgroundIntervalString, Toast.LENGTH_LONG).show();
             }
             /*else {
                 Toast.makeText(this, "No image selected", Toast.LENGTH_LONG).show();
