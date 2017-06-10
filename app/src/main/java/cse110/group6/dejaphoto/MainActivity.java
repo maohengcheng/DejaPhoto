@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
                 for(DataSnapshot friendSnapshot : dataSnapshot.getChildren()) {
                     String friendsEmail = friendSnapshot.getValue().toString();
                     String friendsRef = friendsEmail.substring(0, friendsEmail.lastIndexOf("@"));
-                    Toast.makeText(getApplicationContext(), friendsRef, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Friends' Photos has been downloaded", Toast.LENGTH_LONG).show();
                     DatabaseReference fPhotoDatabase = FirebaseDatabase.getInstance().getReference(friendsRef + "/" + IMAGE_FOLDER_REF);
                     fPhotoDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
